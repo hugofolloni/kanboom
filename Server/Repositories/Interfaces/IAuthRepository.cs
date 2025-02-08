@@ -1,9 +1,9 @@
 using Kanboom.Models.Database;
-using Kanboom.Models.AuthUser.DTO;
+using Kanboom.Models.AuthLogin.DTO;
 
 namespace Kanboom.Repositories.Interfaces;
 
 public interface IAuthRepository
 {
-    Task<User> GetUser(AuthUserRequestDTO request);
+    Task<User> GetUser(AuthLoginRequestDTO request);
 }

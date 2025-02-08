@@ -7,6 +7,7 @@ using Kanboom.Services;
 using Kanboom.Services.Interfaces;
 using Kanboom.Repositories.Interfaces;
 using Kanboom.Repositories;
+using Kanboom.Utils;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -45,10 +46,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>(); 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<VerificationAttribute>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<VerificationAttribute>();
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

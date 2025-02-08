@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-namespace Kanboom.Models.AuthUser;
+namespace Kanboom.Models.AuthLogin;
 
-public class AuthUserRequest : BaseRequest
+public class AuthLoginRequest : BaseRequest
 {
     [Required(ErrorMessage = "Username is missing")]
     public required string Username { get; set; }

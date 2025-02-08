@@ -1,42 +1,69 @@
-using Kanboom.Models.AuthUser;
-using Kanboom.Models.AuthUser.DTO;
+using Kanboom.Models.AuthLogin;
+using Kanboom.Models.AuthLogin.DTO;
+using Kanboom.Models.PersistUser;
+using Kanboom.Models.PersistUser.DTO;
 using Kanboom.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Kanboom.Utils; 
 
-namespace Kanboom.Controllers {
-    public class AuthController : ControllerBase 
+namespace Kanboom.Controllers;
+
+public class AuthController : ControllerBase 
+{
+    private readonly IAuthService _authService;
+
+    public AuthController(IAuthService authService){
+        _authService = authService;
+    }
+
+    // <summary>
+    // Retrieves users from database
+    // </summary>
+    [Verification]
+    [HttpPost("auth/login")]
+    public async Task<ActionResult<AuthLoginResponse>> Login([FromBody] AuthLoginRequest request){
+        try {
+            var user = new AuthLoginRequestDTO{
+                Username = request.Username,
+                Password = request.PasswordHash
+            };
+
+            var response = await _authService.CheckLogin(user);
+
+            if(!response.IsSuccessful){
+                return BadRequest(AuthLoginResponse.FromFailure(response.Message));
+            }
+
+            return Ok(AuthLoginResponse.FromSuccess(response.Token));
+
+                
+        }
+        catch(Exception e){
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [Verification]
+    [HttpPost("auth/persist")]
+    public async Task<ActionResult<PersistUserResponse>> Persist([FromBody] PersistUserRequest request)
     {
-        private readonly IAuthService _authService;
+        try {
+            var token = new PersistUserRequestDTO{
+                Token = request.Token,
+            };
 
-        public AuthController(IAuthService authService){
-            _authService = authService;
-        }
+            var response = _authService.ValidateToken(token);
 
-        // <summary>
-        // Retrieves users from database
-        // </summary>
-        [HttpPost("auth/login")]
-        public async Task<ActionResult<AuthUserResponse>> Login([FromBody] AuthUserRequest request){
-            try {
-                var user = new AuthUserRequestDTO{
-                    Username = request.Username,
-                    Password = request.PasswordHash
-                };
-
-                var response = await _authService.CheckLogin(user);
-
-                if(!response.IsSuccessful){
-                    return BadRequest(AuthUserResponse.FromFailure(response.Message));
-                }
-
-                return Ok(AuthUserResponse.FromSuccess(response.Token));
-       
-                    
+            if(!response.IsSuccessful){
+                return BadRequest(AuthLoginResponse.FromFailure(response.Message));
             }
-            catch(Exception e){
-                return StatusCode(500, e.Message);
-            }
+
+            return Ok(AuthLoginResponse.FromSuccess(response.Username));
+
+                
         }
-        
+        catch(Exception e){
+            return StatusCode(500, e.Message);
+        }
     }
 }

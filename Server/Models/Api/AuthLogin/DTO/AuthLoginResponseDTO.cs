@@ -1,7 +1,7 @@
 using System.ComponentModel;
-namespace Kanboom.Models.AuthUser.DTO;
+namespace Kanboom.Models.AuthLogin.DTO;
 
-public class AuthUserResponseDTO 
+public class AuthLoginResponseDTO
 {
     [DefaultValue("")]
     public string? Token { get; set; }
