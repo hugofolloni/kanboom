@@ -1,5 +1,5 @@
-using Kanboom.Models;
-using Kanboom.Models.DTO;
+using Kanboom.Models.AuthUser;
+using Kanboom.Models.AuthUser.DTO;
 using Kanboom.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +16,9 @@ namespace Kanboom.Controllers {
         // Retrieves users from database
         // </summary>
         [HttpPost("auth/login")]
-        public async Task<ActionResult<UserResponse>> Login([FromBody] UserRequest request){
+        public async Task<ActionResult<AuthUserResponse>> Login([FromBody] AuthUserRequest request){
             try {
-                var user = new UserRequestDTO{
+                var user = new AuthUserRequestDTO{
                     Username = request.Username,
                     Password = request.PasswordHash
                 };
@@ -26,10 +26,12 @@ namespace Kanboom.Controllers {
                 var response = await _authService.CheckLogin(user);
 
                 if(!response.IsSuccessful){
-                    return BadRequest(UserResponse.FromFailure(response.Message));
+                    return BadRequest(AuthUserResponse.FromFailure(response.Message));
                 }
 
-                return Ok(UserResponse.FromSuccess(response.Token));
+                return Ok(AuthUserResponse.FromSuccess(response.Token));
+       
+                    
             }
             catch(Exception e){
                 return StatusCode(500, e.Message);

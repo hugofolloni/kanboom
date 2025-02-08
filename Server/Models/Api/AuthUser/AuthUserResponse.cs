@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
-namespace Kanboom.Models;
+using Kanboom.Models;
+namespace Kanboom.Models.AuthUser;
 
-public class UserResponse : BaseResponse
+public class AuthUserResponse : BaseResponse
 {
     public string? Token { get; set; }
 
-    public static UserResponse FromSuccess(string token) {
-        return new UserResponse {
+    public static AuthUserResponse FromSuccess(string token) {
+        return new AuthUserResponse {
             Token = token,
             Success = true,
             Message = "GET_TOKEN",
@@ -15,8 +16,8 @@ public class UserResponse : BaseResponse
         };
     }
     
-    public static UserResponse FromFailure(String Message, List<string>? errors = null) {
-        return new UserResponse {
+    public static AuthUserResponse FromFailure(String Message, List<string>? errors = null) {
+        return new AuthUserResponse {
             Token = null,
             Success = false,
             Message = Message,
@@ -25,8 +26,8 @@ public class UserResponse : BaseResponse
         };
     } 
 
-    public static UserResponse FromError(String ExceptionMessage, List<string>? errors = null) {
-        return new UserResponse {
+    public static AuthUserResponse FromError(String ExceptionMessage, List<string>? errors = null) {
+        return new AuthUserResponse {
             Token = null,
             Success = false,
             Message = "ERROR",

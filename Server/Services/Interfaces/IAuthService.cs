@@ -1,7 +1,7 @@
-using Kanboom.Models.DTO;
+using Kanboom.Models.AuthUser.DTO;
 
 namespace Kanboom.Services.Interfaces {
     public interface IAuthService {
-        Task<UserResponseDTO> CheckLogin(UserRequestDTO request);
+        Task<AuthUserResponseDTO> CheckLogin(AuthUserRequestDTO request);
     }
 }
