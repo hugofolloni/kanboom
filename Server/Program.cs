@@ -46,6 +46,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>(); 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>(); 
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<VerificationAttribute>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

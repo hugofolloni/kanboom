@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
                 
         }
         catch(Exception e){
-            return StatusCode(500, e.Message);
+            return StatusCode(500, AuthLoginResponse.FromError(e.Message));
         }
     }
 
@@ -55,15 +55,15 @@ public class AuthController : ControllerBase
             var response = _authService.ValidateToken(token);
 
             if(!response.IsSuccessful){
-                return BadRequest(AuthLoginResponse.FromFailure(response.Message));
+                return BadRequest(PersistUserResponse.FromFailure(response.Message));
             }
 
-            return Ok(AuthLoginResponse.FromSuccess(response.Username));
+            return Ok(PersistUserResponse.FromSuccess(response.Username));
 
                 
         }
         catch(Exception e){
-            return StatusCode(500, e.Message);
+            return StatusCode(500, PersistUserResponse.FromError(e.Message));
         }
     }
 }

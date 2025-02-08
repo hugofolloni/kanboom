@@ -14,6 +14,8 @@ public class AppDbContext : DbContext {
         mb.Entity<User>().Property(x => x.Username).HasMaxLength(100);
         mb.Entity<User>().Property(x => x.Password).HasMaxLength(200);
         mb.Entity<User>().Property(x => x.Email).HasMaxLength(100);
+
+        mb.Entity<User>().HasIndex(u => u.Username).IsUnique();
     }
 
 }

@@ -14,7 +14,7 @@ public class AuthLoginResponse : BaseResponse
         };
     }
     
-    public static AuthLoginResponse FromFailure(String Message, List<string>? errors = null) {
+    public static AuthLoginResponse FromFailure(string Message, List<string>? errors = null) {
         return new AuthLoginResponse {
             Token = null,
             Success = false,
@@ -24,7 +24,7 @@ public class AuthLoginResponse : BaseResponse
         };
     } 
 
-    public static AuthLoginResponse FromError(String ExceptionMessage, List<string>? errors = null) {
+    public static AuthLoginResponse FromError(string ExceptionMessage, List<string>? errors = null) {
         return new AuthLoginResponse {
             Token = null,
             Success = false,

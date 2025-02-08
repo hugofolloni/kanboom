@@ -8,13 +8,13 @@ public class PersistUserResponse : BaseResponse
         return new PersistUserResponse {
             Username = username,
             Success = true,
-            Message = "GET_TOKEN",
+            Message = "PERSIST_USER",
             Exception = null,
             Errors = null
         };
     }
     
-    public static PersistUserResponse FromFailure(String Message, List<string>? errors = null) {
+    public static PersistUserResponse FromFailure(string Message, List<string>? errors = null) {
         return new PersistUserResponse {
             Username = null,
             Success = false,
@@ -24,7 +24,7 @@ public class PersistUserResponse : BaseResponse
         };
     } 
 
-    public static PersistUserResponse FromError(String ExceptionMessage, List<string>? errors = null) {
+    public static PersistUserResponse FromError(string ExceptionMessage, List<string>? errors = null) {
         return new PersistUserResponse {
             Username = null,
             Success = false,

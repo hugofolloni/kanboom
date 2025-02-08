@@ -18,7 +18,7 @@ public class AuthService : IAuthService {
         _configuration = configuration;
     }
 
-        private string GenerateJwtToken(User user)
+    public string GenerateJwtToken(User user)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
         var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
@@ -41,6 +41,7 @@ public class AuthService : IAuthService {
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
     public async Task<AuthLoginResponseDTO> CheckLogin(AuthLoginRequestDTO request){
         var response = new AuthLoginResponseDTO();
 
@@ -81,7 +82,7 @@ public class AuthService : IAuthService {
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var username = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            var username = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
             
             response.IsSuccessful = true;
             response.Message = "VALIDATE_TOKEN";
