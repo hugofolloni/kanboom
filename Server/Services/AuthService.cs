@@ -44,21 +44,26 @@ public class AuthService : IAuthService {
 
     public async Task<AuthLoginResponseDTO> CheckLogin(AuthLoginRequestDTO request){
         var response = new AuthLoginResponseDTO();
+        try {
+            var data = await _repository.GetUser(request);
 
-        var data = await _repository.GetUser(request);
+            if (data == null || !request.Password.Equals(data.Password)){
+                response.IsSuccessful = false;
+                response.Message = "NO_MATCH";
+                return response;
+            }
 
-        if (data == null || !request.Password.Equals(data.Password)){
-            response.IsSuccessful = false;
-            response.Message = "NO_MATCH";
+            var token = GenerateJwtToken(data);
+
+            response.IsSuccessful = true;
+            response.Token = token;
             return response;
         }
-
-        var token = GenerateJwtToken(data);
-
-        response.IsSuccessful = true;
-        response.Token = token;
-        
-        return response;
+        catch(Exception ex){
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            return response;
+        }
     }
 
     public PersistUserResponseDTO ValidateToken(PersistUserRequestDTO token)

@@ -13,12 +13,9 @@ public class UserController : ControllerBase
     public UserController(IUserService userService){
         _userService = userService;
     }
-
-    // <summary>
-    // Retrieves users from database
-    // </summary>
+    
     [Verification]
-    [HttpPost("user")]
+    [HttpPost("user/create")]
     public async Task<ActionResult<CreateUserResponse>> Login([FromBody] CreateUserRequest request){
         try {
             var user = new CreateUserRequestDTO{

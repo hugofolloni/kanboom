@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Kanboom.Models;
 using System.Reflection;
 
 namespace Kanboom.Utils

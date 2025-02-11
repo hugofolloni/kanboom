@@ -3,6 +3,7 @@ using System;
 using Kanboom.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250210204130_FixBoardUserRel")]
+    partial class FixBoardUserRel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,10 +38,6 @@ namespace Server.Migrations
 
                     b.Property<long?>("Fk_GroupId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("Invite")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("IsGroupBoard")
                         .HasColumnType("boolean");
@@ -66,18 +65,17 @@ namespace Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("Fk_BoardId")
+                    b.Property<long>("Fk_BoardId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("Fk_UserId")
+                    b.Property<long>("Fk_UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Fk_BoardId");
 
-                    b.HasIndex("Fk_UserId", "Fk_BoardId")
-                        .IsUnique();
+                    b.HasIndex("Fk_UserId");
 
                     b.ToTable("BoardUser");
                 });
@@ -206,16 +204,15 @@ namespace Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("Fk_GroupId")
+                    b.Property<long>("Fk_GroupId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("Fk_UserId")
+                    b.Property<long>("Fk_UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Fk_UserId", "Fk_GroupId")
-                        .IsUnique();
+                    b.HasIndex("Fk_UserId");
 
                     b.ToTable("UserGroup");
                 });
@@ -231,11 +228,15 @@ namespace Server.Migrations
                 {
                     b.HasOne("Kanboom.Models.Database.Board", null)
                         .WithMany("BoardUser")
-                        .HasForeignKey("Fk_BoardId");
+                        .HasForeignKey("Fk_BoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Kanboom.Models.Database.User", null)
                         .WithMany("BoardUser")
-                        .HasForeignKey("Fk_UserId");
+                        .HasForeignKey("Fk_UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kanboom.Models.Database.StageLevels", b =>
@@ -266,7 +267,9 @@ namespace Server.Migrations
                 {
                     b.HasOne("Kanboom.Models.Database.User", null)
                         .WithMany("UserGroup")
-                        .HasForeignKey("Fk_UserId");
+                        .HasForeignKey("Fk_UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kanboom.Models.Database.Board", b =>

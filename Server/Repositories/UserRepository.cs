@@ -30,4 +30,10 @@ public class UserRepository : IUserRepository {
 
         return user;
     }
+
+    public async Task<User> GetUserByUsername(string username) {
+        return await (_context.User ?? Enumerable.Empty<User>().AsQueryable())
+        .Where(x => x.Username == username)
+        .FirstOrDefaultAsync();
+    }
 }

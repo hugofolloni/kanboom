@@ -6,4 +6,5 @@ namespace Kanboom.Repositories.Interfaces;
 public interface IUserRepository
 {
     Task<User> CreateUser(CreateUserRequestDTO request);
+    Task<User> GetUserByUsername(string username);
 }

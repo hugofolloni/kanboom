@@ -46,8 +46,21 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>(); 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>(); 
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IUserInfoService, UserInfoService>(); 
+
+builder.Services.AddScoped<IGroupService, GroupService>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+
+builder.Services.AddScoped<IBoardService, BoardService>();
+builder.Services.AddScoped<IBoardRepository, BoardRepository>();
+
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+
 builder.Services.AddScoped<VerificationAttribute>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

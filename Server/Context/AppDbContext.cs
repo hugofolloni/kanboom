@@ -29,9 +29,11 @@ public class AppDbContext : DbContext {
         mb.Entity<Board>().Property(x => x.Name).HasMaxLength(100);
         mb.Entity<Board>().Property(x => x.StagesCount);
         mb.Entity<Board>().Property(x => x.IsGroupBoard);
+        mb.Entity<Board>().Property(x => x.Invite);
         mb.Entity<Board>().HasMany(x => x.Task).WithOne().HasForeignKey(x => x.Fk_Board);
-        mb.Entity<Board>().HasMany(x => x.BoardUser).WithOne().HasForeignKey(x => x.Fk_UserId);
+        mb.Entity<Board>().HasMany(x => x.BoardUser).WithOne().HasForeignKey(x => x.Fk_BoardId);
         mb.Entity<Board>().HasMany(x => x.StageLevels).WithOne().HasForeignKey(x => x.Fk_Board);
+
     
         mb.Entity<Models.Database.Task>().HasKey(x => x.Id);
         mb.Entity<Models.Database.Task>().Property(x => x.Title).HasMaxLength(100);
@@ -53,8 +55,10 @@ public class AppDbContext : DbContext {
         mb.Entity<StageLevels>().Property(x => x.StageNumber);
 
         mb.Entity<UserGroup>().HasKey(x => x.Id);
-
+        mb.Entity<UserGroup>().HasIndex(x => new { x.Fk_UserId, x.Fk_GroupId }).IsUnique();
+        
         mb.Entity<BoardUser>().HasKey(x => x.Id);
+        mb.Entity<BoardUser>().HasIndex(x => new { x.Fk_UserId, x.Fk_BoardId }).IsUnique(); 
     }
 
 }

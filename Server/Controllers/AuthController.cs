@@ -16,9 +16,6 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    // <summary>
-    // Retrieves users from database
-    // </summary>
     [Verification]
     [HttpPost("auth/login")]
     public async Task<ActionResult<AuthLoginResponse>> Login([FromBody] AuthLoginRequest request){
@@ -59,8 +56,7 @@ public class AuthController : ControllerBase
             }
 
             return Ok(PersistUserResponse.FromSuccess(response.Username));
-
-                
+            
         }
         catch(Exception e){
             return StatusCode(500, PersistUserResponse.FromError(e.Message));

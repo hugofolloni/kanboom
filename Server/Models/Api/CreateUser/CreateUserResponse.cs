@@ -1,5 +1,3 @@
-using NuGet.Common;
-
 namespace Kanboom.Models.CreateUser;
 
 public class CreateUserResponse : BaseResponse
