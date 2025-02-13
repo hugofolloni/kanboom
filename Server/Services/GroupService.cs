@@ -12,7 +12,6 @@ public class GroupService : IGroupService {
         _repository = repository;
     }
 
-    
     public async Task<List<Domain.Group>> GetGroupsByUser(long userId){
         var response = new List<Domain.Group>();
         

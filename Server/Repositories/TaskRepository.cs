@@ -2,6 +2,10 @@ using Kanboom.Repositories.Interfaces;
 using Kanboom.Context;
 using Microsoft.EntityFrameworkCore;
 using Kanboom.Models.CreateTask.DTO;
+using Kanboom.Models.EditTask.DTO;
+using Kanboom.Models;
+using Kanboom.Models.ChangeTaskVisibilityRequestDTO.DTO;
+using Kanboom.Models.ChangeTaskStageRequestDTO.DTO;
 namespace Kanboom.Repositories;
 
 public class TaskRepository : ITaskRepository {
@@ -39,6 +43,7 @@ public class TaskRepository : ITaskRepository {
                 Fk_Board = request.Fk_Board,
                 Fk_UserAssigned = request.Fk_UserAssigned,
                 StageNumber = 0,
+                Hidden = false
             };
 
             _context.Task.Add(task);
@@ -52,4 +57,106 @@ public class TaskRepository : ITaskRepository {
         }
     }
 
+    public async Task<Models.Database.Task> EditTask(EditTaskRequestDTO request)
+    {
+        try
+        {
+            var task = await _context.Task.FirstOrDefaultAsync(t => t.Id == request.Id);
+
+            if(task == null){
+                throw new Exception("TASK_NOT_FOUND");
+            }
+
+            if(task.Hidden){
+                throw new Exception("TASK_COULDNT_BE_EDITED");
+            }
+
+            if(task.Fk_Board != request.Fk_Board){
+                throw new Exception("TASK_NOT_IN_BOARD");
+            }
+
+            if(!string.IsNullOrEmpty(request.Title)){
+                task.Title = request.Title;
+            }
+
+            if(!string.IsNullOrEmpty(request.Description)){
+                task.Description = request.Description;
+            }
+
+            if(request.Fk_UserAssigned != null){
+                task.Fk_UserAssigned = request.Fk_UserAssigned;
+            }
+
+            _context.Task.Update(task);
+            await _context.SaveChangesAsync();
+
+            return task;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<Models.Database.Task> ChangeVisibility(ChangeTaskVisibilityRequestDTO request){
+        try
+        {
+            var task = await _context.Task.FirstOrDefaultAsync(t => t.Id == request.Id);
+
+            if(task == null){
+                throw new Exception("TASK_NOT_FOUND");
+            }
+
+            if(task.Fk_Board != request.Fk_Board){
+                throw new Exception("TASK_NOT_IN_BOARD");
+            }
+
+            Console.WriteLine(task.Hidden.ToString(), request.Hidden.ToString(), task.Title);
+
+            task.Hidden = request.Hidden;
+
+            _context.Task.Update(task);
+            await _context.SaveChangesAsync();
+
+            return task;    
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<Models.Database.Task> ChangeStage(ChangeTaskStageRequestDTO request)
+    {
+        try
+        {
+            var task = await _context.Task.FirstOrDefaultAsync(t => t.Id == request.Id);
+
+            if(task == null){
+                throw new Exception("TASK_NOT_FOUND");
+            }
+
+            if(task.Fk_Board != request.Fk_Board){
+                throw new Exception("TASK_NOT_IN_BOARD");
+            }
+
+            var stages = await _context.StageLevels.Where(s => s.Fk_Board == request.Fk_Board).ToListAsync();
+            var maxStage = stages.Max(s => s.StageNumber);
+
+            if(request.Stage < 0 || request.Stage > maxStage){
+                throw new Exception("INVALID_STAGE");
+            }
+
+            task.StageNumber = request.Stage;
+
+            _context.Task.Update(task);
+            await _context.SaveChangesAsync();
+
+            return task;    
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 }

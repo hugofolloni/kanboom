@@ -46,11 +46,6 @@ public class UserService : IUserService {
         }
     }
 
-      public async Task<User> GetUserByUsername(string username){
-        var data = await _repository.GetUserByUsername(username);
-
-        return data;
-    }
     public async Task<long> GetUserIdByUsername(string username){
         var data = await _repository.GetUserByUsername(username);
 

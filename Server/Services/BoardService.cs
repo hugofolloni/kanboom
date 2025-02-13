@@ -114,7 +114,7 @@ public class BoardService : IBoardService
 
             if (!data){
                 response.IsSuccessful = false;
-                response.Message = "COULDNT_ADD_USER";
+                response.Message = "COULDNT_ADD_USER_TO_BOARD";
                 return response;
             }
 

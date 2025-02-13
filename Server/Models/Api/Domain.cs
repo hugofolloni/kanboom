@@ -23,11 +23,13 @@ public class Domain {
     }
 
     public class Task {
+        public long? Id { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
         public int? StageNumber { get; set; }
         public long?  Fk_UserAssigned  { get; set; }
         public long? Fk_Board { get; set; }
+        public bool Hidden { get; set; }
     }
 
     public class StageLevel {

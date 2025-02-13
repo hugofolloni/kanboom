@@ -26,11 +26,16 @@ namespace Kanboom.Utils
 
         private string? GetApiKeyFromRequest(ActionExecutingContext context)
         {
-            if (context.ActionArguments.Values.FirstOrDefault() is IApiKeyHolder keyHolder)
+            var keyHolder = context.ActionArguments.Values
+                .OfType<IApiKeyHolder>()
+                .FirstOrDefault();
+            
+            if (keyHolder?.ApiKey != null)
             {
                 return keyHolder.ApiKey;
             }
 
+            // Fallback: Try to get the API key from the headers
             return context.HttpContext.Request.Headers["X-API-Key"].FirstOrDefault();
         }
 

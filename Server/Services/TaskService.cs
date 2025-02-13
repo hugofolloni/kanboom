@@ -3,6 +3,9 @@ using Kanboom.Services.Interfaces;
 using Kanboom.Repositories.Interfaces;
 using Kanboom.Models;
 using Kanboom.Models.CreateTask.DTO;
+using Kanboom.Models.EditTask.DTO;
+using Kanboom.Models.ChangeTaskVisibilityRequestDTO.DTO;
+using Kanboom.Models.ChangeTaskStageRequestDTO.DTO;
 
 namespace Kanboom.Services;
  
@@ -38,7 +41,7 @@ public class TaskService : ITaskService {
         
         foreach (Models.Database.Task task in boardTasks)
         {
-            var boardTask = new Domain.Task{Title = task.Title, Description = task.Description, StageNumber = task.StageNumber, Fk_UserAssigned = task.Fk_UserAssigned, Fk_Board = task.Fk_Board};
+            var boardTask = new Domain.Task{Id = task.Id, Title = task.Title, Description = task.Description, StageNumber = task.StageNumber, Fk_UserAssigned = task.Fk_UserAssigned, Fk_Board = task.Fk_Board, Hidden = task.Hidden};
             response.Add(boardTask);
         }
 
@@ -60,15 +63,7 @@ public class TaskService : ITaskService {
 
             var data = await _repository.CreateTask(request);
 
-            var task = new Domain.Task();
-            
-            task.Title = data.Title;
-            task.Description = data.Description;
-            task.Fk_Board = data.Fk_Board;
-            task.Fk_UserAssigned = data.Fk_UserAssigned;
-            task.StageNumber = data.StageNumber;
-
-            response.Task = task;
+            response.Task = TransformDataInDomain(data);
             response.IsSuccessful = true;
 
             return response;
@@ -81,4 +76,105 @@ public class TaskService : ITaskService {
             return response;
         }
     }
+    
+    public async Task<EditTaskResponseDTO> EditTask(EditTaskRequestDTO request)
+    {   
+        var response = new EditTaskResponseDTO();
+        try{
+            var boardUsers = await _userService.GetBoardUsers(request.Fk_Board);
+            var editorId = await _userService.GetUserIdByToken(request.Token);
+
+            if(!boardUsers.Contains(editorId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_EDIT_TASK";
+                return response;    
+            }
+
+            var data = await _repository.EditTask(request);
+
+            response.Task = TransformDataInDomain(data);
+            response.IsSuccessful = true;
+
+            return response;
+        }
+        catch(Exception ex)
+        {
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            response.Task = null;
+            return response;
+        }
+    }
+
+    public async Task<ChangeTaskVisibilityResponseDTO> ChangeVisibility(ChangeTaskVisibilityRequestDTO request)
+    {
+        var response = new ChangeTaskVisibilityResponseDTO();   
+        try{
+            var boardUsers = await _userService.GetBoardUsers(request.Fk_Board);
+            var editorId = await _userService.GetUserIdByToken(request.Token);
+
+            if(!boardUsers.Contains(editorId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_CHANGE_VISIBILITY";
+                return response;    
+            }
+
+            var data = await _repository.ChangeVisibility(request);
+
+            response.Task = TransformDataInDomain(data);
+            response.IsSuccessful = true;
+
+            return response;
+        }
+        catch(Exception ex)
+        {
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            response.Task = null;
+            return response;
+        }
+    }
+
+    public async Task<ChangeTaskStageResponseDTO> ChangeStage(ChangeTaskStageRequestDTO request)
+    {
+        var response = new ChangeTaskStageResponseDTO();   
+        try{
+            var boardUsers = await _userService.GetBoardUsers(request.Fk_Board);
+            var editorId = await _userService.GetUserIdByToken(request.Token);
+
+            if(!boardUsers.Contains(editorId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_CHANGE_STAGE";
+                return response;    
+            }
+
+            var data = await _repository.ChangeStage(request);
+
+            response.Task = TransformDataInDomain(data);
+            response.IsSuccessful = true;
+
+            return response;
+        }
+        catch(Exception ex)
+        {
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            response.Task = null;
+            return response;
+        }
+    }
+
+    private Domain.Task TransformDataInDomain(Models.Database.Task data){
+        var task = new Domain.Task();
+        
+        task.Title = data.Title;
+        task.Description = data.Description;
+        task.Fk_Board = data.Fk_Board;
+        task.Fk_UserAssigned = data.Fk_UserAssigned;
+        task.StageNumber = data.StageNumber;
+        task.Hidden = data.Hidden;
+
+        return task;
+    }
+
 }

@@ -1,20 +1,20 @@
-namespace Kanboom.Models.CreateTask;
+namespace Kanboom.Models.EditTask;
 
-public class CreateTaskResponse : BaseResponse
+public class EditTaskResponse : BaseResponse
 {
     public Domain.Task? Task { get; set; }
-    public static CreateTaskResponse FromSuccess(Domain.Task task) {
-        return new CreateTaskResponse {
+    public static EditTaskResponse FromSuccess(Domain.Task task) {
+        return new EditTaskResponse {
             Task = task,
             Success = true,
-            Message = "CREATE_TASK",
+            Message = "EDIT_TASK",
             Exception = null,
             Errors = null
         };
     }
     
-    public static CreateTaskResponse FromFailure(string Message, List<string>? errors = null) {
-        return new CreateTaskResponse {
+    public static EditTaskResponse FromFailure(string Message, List<string>? errors = null) {
+        return new EditTaskResponse {
             Task = null,
             Success = false,
             Message = Message,
@@ -23,8 +23,8 @@ public class CreateTaskResponse : BaseResponse
         };
     } 
 
-    public static CreateTaskResponse FromError(string ExceptionMessage, List<string>? errors = null) {
-        return new CreateTaskResponse {
+    public static EditTaskResponse FromError(string ExceptionMessage, List<string>? errors = null) {
+        return new EditTaskResponse {
             Task = null,
             Success = false,
             Message = "ERROR",
