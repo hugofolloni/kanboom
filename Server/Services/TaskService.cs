@@ -164,9 +164,19 @@ public class TaskService : ITaskService {
         }
     }
 
+    public async Task<List<Domain.Task>> GetTasksByUser(long userId){
+        var response = new List<Domain.Task>();
+        var data = await _repository.GetTasksByUser(userId);
+        foreach(Models.Database.Task task in data){
+            response.Add(TransformDataInDomain(task));
+        }
+        return response;
+    }
+
     private Domain.Task TransformDataInDomain(Models.Database.Task data){
         var task = new Domain.Task();
         
+        task.Id = data.Id;
         task.Title = data.Title;
         task.Description = data.Description;
         task.Fk_Board = data.Fk_Board;
@@ -177,4 +187,12 @@ public class TaskService : ITaskService {
         return task;
     }
 
+    public async Task<bool> HandleTaskOwnerLeavingGroup(long taskId, long boardOwner)
+    {
+        var data = await _repository.ChangeTaskAssignedUser(taskId, boardOwner);
+        if(data.Fk_UserAssigned != boardOwner){
+            return false;
+        }
+        return true;
+    }
 }

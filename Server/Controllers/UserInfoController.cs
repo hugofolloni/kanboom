@@ -28,7 +28,7 @@ public class UserInfoController : ControllerBase
                 return BadRequest(RetrieveUserInfoResponse.FromFailure(response.Message));
             }
 
-            return Ok(RetrieveUserInfoResponse.FromSuccess(response.Username, response.ProfilePic, response.Boards, response.Groups, response.Id));
+            return Ok(RetrieveUserInfoResponse.FromSuccess(response.Username, response.ProfilePic, response.Boards, response.Tasks, response.Id));
         }
         catch(Exception e){
             return StatusCode(500, RetrieveUserInfoResponse.FromError(e.Message));

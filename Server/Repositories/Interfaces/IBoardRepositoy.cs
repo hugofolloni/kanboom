@@ -13,4 +13,6 @@ public interface IBoardRepository
     Task<List<StageLevels>> RetrieveLabels(long? boardId);
     Task<bool> AddUserToBoard(long? userId, long? boardId);
     Task<long?> RetrieveBoardIdByInvite(string? invite);
+    Task<bool> RemoveUserFromBoard(long? userId, long? boardId);
+    Task<List<Models.Database.Task>> GetTasksByUserInBoard(long userId, long boardId);
 }

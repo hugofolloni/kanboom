@@ -159,4 +159,31 @@ public class TaskRepository : ITaskRepository {
             throw new Exception(ex.Message);
         }
     }
+
+    public async Task<List<Models.Database.Task>> GetTasksByUser(long userId){
+        return await _context.Task.Where(t => t.Fk_UserAssigned == userId).ToListAsync();
+    }
+
+    public async Task<Models.Database.Task> ChangeTaskAssignedUser(long taskId, long userId)
+    {
+        try
+        {
+            var task = await _context.Task.FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if(task == null){
+                throw new Exception("TASK_NOT_FOUND");
+            }
+
+            task.Fk_UserAssigned = userId;
+
+            _context.Task.Update(task);
+            await _context.SaveChangesAsync();
+
+            return task;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 }

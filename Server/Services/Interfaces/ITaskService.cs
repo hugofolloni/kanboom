@@ -14,4 +14,6 @@ public interface ITaskService {
     Task<EditTaskResponseDTO> EditTask(EditTaskRequestDTO request);
     Task<ChangeTaskVisibilityResponseDTO> ChangeVisibility(ChangeTaskVisibilityRequestDTO request);
     Task<ChangeTaskStageResponseDTO> ChangeStage(ChangeTaskStageRequestDTO request);
+    Task<List<Domain.Task>> GetTasksByUser(long userId);
+    Task<bool> HandleTaskOwnerLeavingGroup(long taskId, long userId);
 }

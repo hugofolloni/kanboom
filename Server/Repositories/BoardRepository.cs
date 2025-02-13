@@ -140,4 +140,30 @@ public class BoardRepository : IBoardRepository {
 
         return new string(result);
     }
+
+    public async Task<bool> RemoveUserFromBoard(long? userId, long? boardId)
+    {
+        try
+        {
+            var userBoard = await _context.BoardUser
+            .Where(ub => ub.Fk_UserId == userId && ub.Fk_BoardId == boardId)
+            .FirstOrDefaultAsync();
+
+            _context.BoardUser.Remove(userBoard);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<List<Models.Database.Task>> GetTasksByUserInBoard(long userId, long boardId)
+    {
+        return await _context.Task
+        .Where(t => t.Fk_UserAssigned == userId && t.Fk_Board == boardId)
+        .ToListAsync();
+    }
 }

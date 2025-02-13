@@ -5,15 +5,15 @@ public class RetrieveUserInfoResponse : BaseResponse
     public string? Username { get; set; }
     public string? ProfilePic { get; set; }
     public List<Domain.Board>? Boards { get; set; }
-    public List<Domain.Group>? Groups { get; set; }
+    public List<Domain.Task>? Tasks { get; set; }
     public long? Id { get; set; }
 
-    public static RetrieveUserInfoResponse FromSuccess(string username, string profilePic, List<Domain.Board> boards, List<Domain.Group> groups, long? id) {
+    public static RetrieveUserInfoResponse FromSuccess(string username, string profilePic, List<Domain.Board> boards, List<Domain.Task> tasks, long? id) {
         return new RetrieveUserInfoResponse {
             Username = username,
             ProfilePic = profilePic,
             Boards = boards,
-            Groups = groups,
+            Tasks = tasks,
             Id = id,
             Success = true,
             Message = "GET_USER_INFO",
@@ -27,7 +27,7 @@ public class RetrieveUserInfoResponse : BaseResponse
             Username = null,
             ProfilePic = null,
             Boards = null,
-            Groups = null,
+            Tasks = null,
             Id = null,
             Success = false,
             Message = Message,
@@ -41,7 +41,7 @@ public class RetrieveUserInfoResponse : BaseResponse
             Username = null,
             ProfilePic = null,
             Boards = null,
-            Groups = null,
+            Tasks = null,
             Id = null,
             Success = false,
             Message = "ERROR",

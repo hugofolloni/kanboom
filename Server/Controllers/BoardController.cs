@@ -4,7 +4,8 @@ using Kanboom.Models.CreateBoard;
 using Kanboom.Models.CreateBoard.DTO;
 using Kanboom.Models.RetrieveBoard.DTO;
 using Kanboom.Models.RetrieveBoard;
-using Kanboom.Utils; 
+using Kanboom.Utils;
+using Kanboom.Models.LeaveBoard;
 
 namespace Kanboom.Controllers;
 
@@ -88,6 +89,28 @@ public class BoardController : ControllerBase
         }
     }
 
-    
+    [Verification]
+    [HttpDelete("boardUser/leave")]
+    public async Task<ActionResult<LeaveBoardResponse>> LeaveBoard([FromBody] LeaveBoardRequest request){
+        try {
+            var boardUser = new Models.LeaveBoard.DTO.LeaveBoardRequestDTO{
+                BoardId = request.BoardId,
+                Token = request.Token
+            };
+
+            var response = await _boardService.LeaveBoard(boardUser);
+
+            if(!response.IsSuccessful){
+                return BadRequest(LeaveBoardResponse.FromFailure("USER_COULDNT_BE_REMOVED"));
+            }
+
+            return Ok(LeaveBoardResponse.FromSuccess());
+
+                
+        }
+        catch(Exception e){
+            return StatusCode(500, LeaveBoardResponse.FromError(e.Message));
+        }
+    }
 
 }

@@ -7,13 +7,13 @@ namespace Kanboom.Services;
 public class UserInfoService : IUserInfoService {
 
     private readonly IUserService _userService;
-    private readonly IGroupService _groupService;
+    private readonly ITaskService _taskService;
     private readonly IBoardService _boardService;
     private readonly IAuthService _authService;
 
-    public UserInfoService(IUserService userService, IGroupService groupService, IBoardService boardService, IAuthService authService){
+    public UserInfoService(IUserService userService, ITaskService taskService, IBoardService boardService, IAuthService authService){
         _userService = userService;
-        _groupService = groupService;
+        _taskService = taskService;
         _boardService = boardService;
         _authService = authService;
     }
@@ -31,7 +31,7 @@ public class UserInfoService : IUserInfoService {
 
             var userId = await _userService.GetUserIdByUsername(validation.Username);
 
-            response.Groups = await _groupService.GetGroupsByUser(userId);
+            response.Tasks = await _taskService.GetTasksByUser(userId);
             response.Boards = await _boardService.GetBoardsByUser(userId);
             response.Id = userId;
 
@@ -43,7 +43,7 @@ public class UserInfoService : IUserInfoService {
             response.IsSuccessful = false;
             response.Message = ex.Message;
             response.Username = null;
-            response.Groups = null;
+            response.Tasks = null;
             response.Boards = null;
             return response;
         }

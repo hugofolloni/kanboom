@@ -1,9 +1,10 @@
 using Kanboom.Services.Interfaces;
 using Kanboom.Repositories.Interfaces;
-using Kanboom.Models.CreateBoard.DTO;
 using Kanboom.Models;
-using Kanboom.Models.RetrieveBoard.DTO;
 using Kanboom.Models.Database;
+using Kanboom.Models.CreateBoard.DTO;
+using Kanboom.Models.RetrieveBoard.DTO;
+using Kanboom.Models.LeaveBoard.DTO;
 
 namespace Kanboom.Services;
  
@@ -59,8 +60,8 @@ public class BoardService : IBoardService
         }
     }
 
-    public async Task<RetrieveBoardReponseDTO> RetrieveBoard(RetrieveBoardRequestDTO request){
-        var response = new RetrieveBoardReponseDTO();
+    public async Task<RetrieveBoardResponseDTO> RetrieveBoard(RetrieveBoardRequestDTO request){
+        var response = new RetrieveBoardResponseDTO();
         try {
             if(!await _repository.CheckUser(await _userService.GetUserIdByToken(request.Token), request.BoardId)){
                 response.IsSuccessful = false;
@@ -98,9 +99,9 @@ public class BoardService : IBoardService
         return response;
     }
 
-    public async Task<RetrieveBoardReponseDTO> AddUserToBoard(HandleInviteRequestDTO request)
+    public async Task<RetrieveBoardResponseDTO> AddUserToBoard(HandleInviteRequestDTO request)
     {
-        var response = new RetrieveBoardReponseDTO();
+        var response = new RetrieveBoardResponseDTO();
         try{
             var boardId = await _repository.RetrieveBoardIdByInvite(request.Invite);
 
@@ -127,5 +128,42 @@ public class BoardService : IBoardService
         }
     }
 
+    public async Task<LeaveBoardResponseDTO> LeaveBoard(LeaveBoardRequestDTO request){
+        var response = new LeaveBoardResponseDTO();
+
+        try{
+            var userId = await _userService.GetUserIdByToken(request.Token);
+
+            if(!await _repository.CheckUser(userId, request.BoardId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_NOT_IN_BOARD";
+                return response;
+            }
+
+            var boardInfo = await _repository.RetrieveBoard(request.BoardId);
+
+            var tasksAssigned = await _repository.GetTasksByUserInBoard(userId, boardInfo.Id);
+            foreach(Models.Database.Task task in tasksAssigned){
+                await _taskService.HandleTaskOwnerLeavingGroup(task.Id, boardInfo.Fk_BoardOwner);
+            }
+
+            var data = await _repository.RemoveUserFromBoard(userId, request.BoardId);
+
+            if (!data){
+                response.IsSuccessful = false;
+                response.Message = "COULDNT_LEAVE_BOARD";
+                return response;
+            }
+
+            response.IsSuccessful = true;
+            return response;
+        }
+        catch(Exception ex){
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            return response;
+        }
+        
+    }
 
 }

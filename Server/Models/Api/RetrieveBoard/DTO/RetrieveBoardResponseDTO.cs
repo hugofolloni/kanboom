@@ -1,6 +1,6 @@
 namespace Kanboom.Models.RetrieveBoard.DTO;
 
-public class RetrieveBoardReponseDTO
+public class RetrieveBoardResponseDTO
 {
     public Domain.Board? Board { get; set; }
     public bool IsSuccessful { get; set; }
