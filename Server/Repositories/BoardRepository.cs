@@ -35,13 +35,19 @@ public class BoardRepository : IBoardRepository {
 
     public async Task<Board> CreateBoard(CreateBoardRequestDTO request, long userId)
     {
-         var board = new Board
+        var code = GenerateRandomCode(8);
+        while (await _context.Board.AnyAsync(b => b.Invite == code))
+        {
+            code = GenerateRandomCode(8);
+        }
+
+        var board = new Board
         {
             Name = request.Name,
             StagesCount = 3,
             Fk_BoardOwner = userId,
             IsGroupBoard = false,
-            Invite = GenerateRandomCode(8)
+            Invite = code
         };
         _context.Board.Add(board);
 
@@ -122,24 +128,6 @@ public class BoardRepository : IBoardRepository {
         .Select(b => (long?)b.Id)
         .FirstOrDefaultAsync();
     }
-    
-    private static string GenerateRandomCode(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        char[] result = new char[length];
-
-        using var rng = RandomNumberGenerator.Create();
-        byte[] data = new byte[length];
-
-        rng.GetBytes(data);
-
-        for (int i = 0; i < length; i++)
-        {
-            result[i] = chars[data[i] % chars.Length];
-        }
-
-        return new string(result);
-    }
 
     public async Task<bool> RemoveUserFromBoard(long? userId, long? boardId)
     {
@@ -165,5 +153,131 @@ public class BoardRepository : IBoardRepository {
         return await _context.Task
         .Where(t => t.Fk_UserAssigned == userId && t.Fk_Board == boardId)
         .ToListAsync();
+    }
+
+    public async Task<Board> ChangeOwner(long newOwnerId, long boardId)
+    {
+        try
+        {
+            var board = await _context.Board
+            .Where(b => b.Id == boardId)
+            .FirstOrDefaultAsync();
+
+            board.Fk_BoardOwner = newOwnerId;
+            await _context.SaveChangesAsync();
+            
+            return board;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<bool> DeleteBoard(long? boardId)
+    {
+        try
+        {
+            var board = await _context.Board
+            .Where(b => b.Id == boardId)
+            .FirstOrDefaultAsync();
+
+            await DeleteAllBoardTasks(boardId);
+            await DeleteAllBoardStageLevels(boardId);
+            await DeleteAllBoardUsers(boardId);
+
+            _context.Board.Remove(board);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    private async Task<bool> DeleteAllBoardTasks(long? boardId)
+    {
+        try
+        {
+            var tasks = await _context.Task
+            .Where(t => t.Fk_Board == boardId)
+            .ToListAsync();
+
+            _context.Task.RemoveRange(tasks);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    private async Task<bool> DeleteAllBoardUsers(long? boardId)
+    {
+        try
+        {
+            var users = await _context.BoardUser
+            .Where(bu => bu.Fk_BoardId == boardId)
+            .ToListAsync();
+
+            _context.BoardUser.RemoveRange(users);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+    
+    private async Task<bool> DeleteAllBoardStageLevels(long? boardId)
+    {
+        try
+        {
+            var stageLevels = await _context.StageLevels
+            .Where(sl => sl.Fk_Board == boardId)
+            .ToListAsync();
+
+            _context.StageLevels.RemoveRange(stageLevels);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<long> GetBoardOwner(long? boardId)
+    {
+        return await _context.Board
+        .Where(b => b.Id == boardId)
+        .Select(b => b.Fk_BoardOwner)
+        .FirstOrDefaultAsync();
+    }
+
+
+    private static string GenerateRandomCode(int length)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        char[] result = new char[length];
+
+        using var rng = RandomNumberGenerator.Create();
+        byte[] data = new byte[length];
+
+        rng.GetBytes(data);
+
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = chars[data[i] % chars.Length];
+        }
+
+        return new string(result);
     }
 }

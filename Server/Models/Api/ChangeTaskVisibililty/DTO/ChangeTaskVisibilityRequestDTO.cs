@@ -1,4 +1,4 @@
-namespace Kanboom.Models.ChangeTaskVisibilityRequestDTO.DTO;
+namespace Kanboom.Models.ChangeTaskVisibility.DTO;
 
 public class ChangeTaskVisibilityRequestDTO 
 {

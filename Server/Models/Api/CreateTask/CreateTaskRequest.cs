@@ -12,9 +12,7 @@ public class CreateTaskRequest : BaseRequest
     [Required(ErrorMessage = "Description is missing")]
     public required string Description { get; set; }
 
-    [Required(ErrorMessage = "Fk_UserAssigned is missing")]
-    public required long Fk_UserAssigned { get; set; }
-
     [Required(ErrorMessage = "Fk_Board is missing")]
     public required long Fk_Board { get; set; }
+    public long? Fk_UserAssigned { get; set; }
 }

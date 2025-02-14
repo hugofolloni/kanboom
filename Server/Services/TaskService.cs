@@ -4,8 +4,9 @@ using Kanboom.Repositories.Interfaces;
 using Kanboom.Models;
 using Kanboom.Models.CreateTask.DTO;
 using Kanboom.Models.EditTask.DTO;
-using Kanboom.Models.ChangeTaskVisibilityRequestDTO.DTO;
-using Kanboom.Models.ChangeTaskStageRequestDTO.DTO;
+using Kanboom.Models.ChangeTaskVisibility.DTO;
+using Kanboom.Models.ChangeTaskStage.DTO;
+using Kanboom.Models.ChangeTaskAssigned.DTO;
 
 namespace Kanboom.Services;
  
@@ -55,7 +56,7 @@ public class TaskService : ITaskService {
             var boardUsers = await _userService.GetBoardUsers(request.Fk_Board);
             var creatorId = await _userService.GetUserIdByToken(request.Token);
 
-            if(!boardUsers.Contains(creatorId) || !boardUsers.Contains(request.Fk_UserAssigned)){
+            if(!boardUsers.Contains(creatorId) || (!boardUsers.Contains(request.Fk_UserAssigned) && request.Fk_UserAssigned != null)){
                 response.IsSuccessful = false;
                 response.Message = "USER_CANT_CREATE_OR_BE_ASSIGNED_TO_TASK";
                 return response;    
@@ -173,7 +174,52 @@ public class TaskService : ITaskService {
         return response;
     }
 
-    private Domain.Task TransformDataInDomain(Models.Database.Task data){
+    public async Task<bool> HandleTaskOwnerLeavingGroup(long taskId, long boardOwner)
+    {
+        var data = await _repository.ChangeTaskAssignedUser(taskId, boardOwner);
+        if(data.Fk_UserAssigned != boardOwner){
+            return false;
+        }
+        return true;
+    }
+
+    public async Task<ChangeTaskAssignedResponseDTO> ChangeAssigned(ChangeTaskAssignedRequestDTO request)
+    {
+        var response = new ChangeTaskAssignedResponseDTO();
+        try{
+            var boardUsers = await _userService.GetBoardUsers(request.Fk_Board);
+            var editorId = await _userService.GetUserIdByToken(request.Token);
+            var task = await _repository.RetrieveTask(request.Id);
+
+            if(!boardUsers.Contains(request.Assigned)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_BE_ASSIGNED";
+                return response;
+            }
+
+            if(task.Fk_UserAssigned != null && (await _userService.GetBoardOwner(request.Fk_Board) != editorId || task.Fk_UserAssigned == editorId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_CHANGE_ASSIGNED";
+                return response;    
+            }
+
+            var data = await _repository.ChangeTaskAssignedUser(request.Id, request.Assigned);
+
+            response.Task = TransformDataInDomain(data);
+            response.IsSuccessful = true;
+
+            return response;
+        }
+        catch(Exception ex)
+        {
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            response.Task = null;
+            return response;
+        }
+    }
+
+        private Domain.Task TransformDataInDomain(Models.Database.Task data){
         var task = new Domain.Task();
         
         task.Id = data.Id;
@@ -187,12 +233,4 @@ public class TaskService : ITaskService {
         return task;
     }
 
-    public async Task<bool> HandleTaskOwnerLeavingGroup(long taskId, long boardOwner)
-    {
-        var data = await _repository.ChangeTaskAssignedUser(taskId, boardOwner);
-        if(data.Fk_UserAssigned != boardOwner){
-            return false;
-        }
-        return true;
-    }
 }

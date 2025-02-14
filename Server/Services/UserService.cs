@@ -69,4 +69,8 @@ public class UserService : IUserService {
         return await _boardRepository.GetBoardUsers(boardId);
     }
 
+    public async Task<long> GetBoardOwner(long? boardId){
+        return await _boardRepository.GetBoardOwner(boardId);
+    }
+
 }

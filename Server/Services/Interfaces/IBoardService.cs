@@ -1,4 +1,5 @@
 using Kanboom.Models;
+using Kanboom.Models.ChangeBoardOwner.DTO;
 using Kanboom.Models.CreateBoard.DTO;
 using Kanboom.Models.LeaveBoard.DTO;
 using Kanboom.Models.RetrieveBoard.DTO;
@@ -11,4 +12,5 @@ public interface IBoardService {
     Task<RetrieveBoardResponseDTO> RetrieveBoard(RetrieveBoardRequestDTO request);
     Task<RetrieveBoardResponseDTO> AddUserToBoard(HandleInviteRequestDTO request);
     Task<LeaveBoardResponseDTO> LeaveBoard(LeaveBoardRequestDTO request);
+    Task<ChangeBoardOwnerResponseDTO> ChangeOwner(ChangeBoardOwnerRequestDTO request);
 }

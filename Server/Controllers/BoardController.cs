@@ -5,7 +5,8 @@ using Kanboom.Models.CreateBoard.DTO;
 using Kanboom.Models.RetrieveBoard.DTO;
 using Kanboom.Models.RetrieveBoard;
 using Kanboom.Utils;
-using Kanboom.Models.LeaveBoard;
+using Kanboom.Models.ChangeBoardOwner;
+using Kanboom.Models.ChangeBoardOwner.DTO;
 
 namespace Kanboom.Controllers;
 
@@ -15,30 +16,6 @@ public class BoardController : ControllerBase
 
     public BoardController(IBoardService boardService){
         _boardService = boardService;
-    }
-    
-    [Verification]
-    [HttpPost("board/create")]
-    public async Task<ActionResult<CreateBoardResponse>> CreateBoard([FromBody] CreateBoardRequest request){
-        try {
-            var user = new CreateBoardRequestDTO{
-                Name = request.Name,
-                Token = request.Token
-            };
-
-            var response = await _boardService.CreateBoard(user);
-
-            if(!response.IsSuccessful){
-                return BadRequest(CreateBoardResponse.FromFailure(response.Message));
-            }
-
-            return Ok(CreateBoardResponse.FromSuccess(response.Board));
-
-                
-        }
-        catch(Exception e){
-            return StatusCode(500, CreateBoardResponse.FromError(e.Message));
-        }
     }
     
     [Verification]
@@ -66,51 +43,51 @@ public class BoardController : ControllerBase
     }
 
     [Verification]
-    [HttpPost("boardUser/invite")]
-    public async Task<ActionResult<RetrieveBoardResponse>> AddUserToBoard([FromBody] HandleInviteRequest request){
+    [HttpPost("board/create")]
+    public async Task<ActionResult<CreateBoardResponse>> CreateBoard([FromBody] CreateBoardRequest request){
         try {
-            var boardUser = new HandleInviteRequestDTO{
-                Invite = request.Invite,
+            var user = new CreateBoardRequestDTO{
+                Name = request.Name,
                 Token = request.Token
             };
 
-            var response = await _boardService.AddUserToBoard(boardUser);
+            var response = await _boardService.CreateBoard(user);
 
             if(!response.IsSuccessful){
-                return BadRequest(RetrieveBoardResponse.FromFailure("USER_COULDNT_BE_ADDED"));
+                return BadRequest(CreateBoardResponse.FromFailure(response.Message));
             }
 
-            return Ok(RetrieveBoardResponse.FromSuccess(response.Board));
+            return Ok(CreateBoardResponse.FromSuccess(response.Board));
 
                 
         }
         catch(Exception e){
-            return StatusCode(500, RetrieveBoardResponse.FromError(e.Message));
+            return StatusCode(500, CreateBoardResponse.FromError(e.Message));
         }
     }
 
     [Verification]
-    [HttpDelete("boardUser/leave")]
-    public async Task<ActionResult<LeaveBoardResponse>> LeaveBoard([FromBody] LeaveBoardRequest request){
+    [HttpPatch("board/changeOwner")]
+    public async Task<ActionResult<ChangeBoardOwnerResponse>> ChangeOwner([FromBody] ChangeBoardOwnerRequest request){
         try {
-            var boardUser = new Models.LeaveBoard.DTO.LeaveBoardRequestDTO{
+            var boardUser = new ChangeBoardOwnerRequestDTO{
                 BoardId = request.BoardId,
-                Token = request.Token
+                Token = request.Token,
+                BoardOwner = request.Owner
             };
 
-            var response = await _boardService.LeaveBoard(boardUser);
+            var response = await _boardService.ChangeOwner(boardUser);
 
             if(!response.IsSuccessful){
-                return BadRequest(LeaveBoardResponse.FromFailure("USER_COULDNT_BE_REMOVED"));
+                return BadRequest(ChangeBoardOwnerResponse.FromFailure(response.Message));
             }
 
-            return Ok(LeaveBoardResponse.FromSuccess());
+            return Ok(ChangeBoardOwnerResponse.FromSuccess(response.Board));
 
                 
         }
         catch(Exception e){
-            return StatusCode(500, LeaveBoardResponse.FromError(e.Message));
+            return StatusCode(500, ChangeBoardOwnerResponse.FromError(e.Message));
         }
     }
-
 }

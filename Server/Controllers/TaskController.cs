@@ -6,9 +6,11 @@ using Kanboom.Models.CreateTask.DTO;
 using Kanboom.Models.EditTask;
 using Kanboom.Models.EditTask.DTO;
 using Kanboom.Models.ChangeTaskVisibility;
-using Kanboom.Models.ChangeTaskVisibilityRequestDTO.DTO;
+using Kanboom.Models.ChangeTaskVisibility.DTO;
 using Kanboom.Models.ChangeTaskStage;
-using Kanboom.Models.ChangeTaskStageRequestDTO.DTO;
+using Kanboom.Models.ChangeTaskStage.DTO;
+using Kanboom.Models.ChangeTaskAssigned;
+using Kanboom.Models.ChangeTaskAssigned.DTO;
 
 namespace Kanboom.Controllers;
 
@@ -117,7 +119,6 @@ public class TaskController : ControllerBase
                 Stage = request.Stage
             };
 
-
             var response = await _taskService.ChangeStage(task);
 
             if(!response.IsSuccessful){
@@ -126,10 +127,35 @@ public class TaskController : ControllerBase
 
             return Ok(ChangeTaskStageResponse.FromSuccess(response.Task));
 
-                
         }
         catch(Exception e){
             return StatusCode(500, ChangeTaskStageResponse.FromError(e.Message));
+        }
+    }
+
+    [Verification]
+    [HttpPatch("task/changeAssigned")]
+    public async Task<ActionResult<ChangeTaskAssignedResponse>> ChangeAssigned([FromBody] ChangeTaskAssignedRequest request){
+        try {
+
+            var task = new ChangeTaskAssignedRequestDTO{
+                Id = request.Id,
+                Token = request.Token,
+                Fk_Board = request.Fk_Board,
+                Assigned = request.Assigned
+            };
+
+            var response = await _taskService.ChangeAssigned(task);
+
+            if(!response.IsSuccessful){
+                return BadRequest(ChangeTaskAssignedResponse.FromFailure(response.Message));
+            }
+
+            return Ok(ChangeTaskAssignedResponse.FromSuccess(response.Task));
+
+        }
+        catch(Exception e){
+            return StatusCode(500, ChangeTaskAssignedResponse.FromError(e.Message));
         }
     }
 }

@@ -1,5 +1,5 @@
-using Kanboom.Models.ChangeTaskStageRequestDTO.DTO;
-using Kanboom.Models.ChangeTaskVisibilityRequestDTO.DTO;
+using Kanboom.Models.ChangeTaskStage.DTO;
+using Kanboom.Models.ChangeTaskVisibility.DTO;
 using Kanboom.Models.CreateTask.DTO;
 using Kanboom.Models.EditTask.DTO;
 
@@ -14,4 +14,5 @@ public interface ITaskRepository
     Task<Models.Database.Task> ChangeStage(ChangeTaskStageRequestDTO request);
     Task<List<Models.Database.Task>> GetTasksByUser(long userId);
     Task<Models.Database.Task> ChangeTaskAssignedUser(long taskId, long userId);
+    Task<Models.Database.Task> RetrieveTask(long taskId);
 }

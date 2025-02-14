@@ -5,6 +5,7 @@ using Kanboom.Models.Database;
 using Kanboom.Models.CreateBoard.DTO;
 using Kanboom.Models.RetrieveBoard.DTO;
 using Kanboom.Models.LeaveBoard.DTO;
+using Kanboom.Models.ChangeBoardOwner.DTO;
 
 namespace Kanboom.Services;
  
@@ -104,6 +105,7 @@ public class BoardService : IBoardService
         var response = new RetrieveBoardResponseDTO();
         try{
             var boardId = await _repository.RetrieveBoardIdByInvite(request.Invite);
+            var userId = await _userService.GetUserIdByToken(request.Token);
 
             if (boardId == null){
                 response.IsSuccessful = false;
@@ -111,7 +113,15 @@ public class BoardService : IBoardService
                 return response;
             }
 
-            var data = await _repository.AddUserToBoard(await _userService.GetUserIdByToken(request.Token), boardId);
+            var boardUsers = await _userService.GetBoardUsers(boardId);
+
+            if(boardUsers.Contains(userId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_ALREADY_IN_BOARD";
+                return response;
+            }
+
+            var data = await _repository.AddUserToBoard(userId, boardId);
 
             if (!data){
                 response.IsSuccessful = false;
@@ -142,6 +152,17 @@ public class BoardService : IBoardService
 
             var boardInfo = await _repository.RetrieveBoard(request.BoardId);
 
+            if(boardInfo.BoardUser.Count == 1 && boardInfo.Fk_BoardOwner.Equals(userId)){
+                await _repository.DeleteBoard(request.BoardId);
+                response.IsSuccessful = true;  
+                return response; // Already deleted user from board, so it can return 
+            }
+
+            if(boardInfo.Fk_BoardOwner.Equals(userId)){
+                var secondUser = boardInfo.BoardUser.ElementAtOrDefault(1);
+                await _repository.ChangeOwner(secondUser.Id, request.BoardId);
+            }
+
             var tasksAssigned = await _repository.GetTasksByUserInBoard(userId, boardInfo.Id);
             foreach(Models.Database.Task task in tasksAssigned){
                 await _taskService.HandleTaskOwnerLeavingGroup(task.Id, boardInfo.Fk_BoardOwner);
@@ -166,4 +187,37 @@ public class BoardService : IBoardService
         
     }
 
+    public async Task<ChangeBoardOwnerResponseDTO> ChangeOwner(ChangeBoardOwnerRequestDTO request)
+    {
+        var response = new ChangeBoardOwnerResponseDTO();
+        try{
+            var boardUsers = await _userService.GetBoardUsers(request.BoardId);
+            var editorId = await _userService.GetUserIdByToken(request.Token);
+            
+            var boardInfo = await _repository.RetrieveBoard(request.BoardId);
+
+            if(!boardInfo.Fk_BoardOwner.Equals(editorId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_CHANGE_OWNER";
+                return response;
+            }
+
+            if(!boardUsers.Contains(request.BoardOwner)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_BE_ASSIGNED_AS_OWNER";
+                return response;    
+            }
+
+            var data = await _repository.ChangeOwner(request.BoardOwner, request.BoardId);
+
+            response.Board = new Domain.Board{Id = data.Id, Name = data.Name, StagesCount = data.StagesCount, Fk_BoardOwner = data.Fk_BoardOwner, IsGroupBoard = data.IsGroupBoard, Tasks = await _taskService.GetTasksInBoard(data.Id), Users = await _userService.GetBoardUsers(data.Id), StageLevels = await RetrieveLabelsForBoardLevels(data.Id), Invite = data.Invite};
+            response.IsSuccessful = true;
+            return response;
+        }
+        catch(Exception ex){
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            return response;
+        }
+    }
 }

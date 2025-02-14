@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Kanboom.Models.CreateTask.DTO;
 using Kanboom.Models.EditTask.DTO;
 using Kanboom.Models;
-using Kanboom.Models.ChangeTaskVisibilityRequestDTO.DTO;
-using Kanboom.Models.ChangeTaskStageRequestDTO.DTO;
+using Kanboom.Models.ChangeTaskVisibility.DTO;
+using Kanboom.Models.ChangeTaskStage.DTO;
 namespace Kanboom.Repositories;
 
 public class TaskRepository : ITaskRepository {
@@ -185,5 +185,10 @@ public class TaskRepository : ITaskRepository {
         {
             throw new Exception(ex.Message);
         }
+    }
+
+    public async Task<Models.Database.Task> RetrieveTask(long taskId)
+    {
+        return await _context.Task.FirstOrDefaultAsync(t => t.Id == taskId);
     }
 }

@@ -15,4 +15,7 @@ public interface IBoardRepository
     Task<long?> RetrieveBoardIdByInvite(string? invite);
     Task<bool> RemoveUserFromBoard(long? userId, long? boardId);
     Task<List<Models.Database.Task>> GetTasksByUserInBoard(long userId, long boardId);
+    Task<Board> ChangeOwner(long newOwnerId, long boardId);
+    Task<bool> DeleteBoard(long? boardId);
+    Task<long> GetBoardOwner(long? boardId);
 }

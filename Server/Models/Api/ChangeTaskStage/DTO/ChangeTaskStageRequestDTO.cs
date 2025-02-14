@@ -1,4 +1,4 @@
-namespace Kanboom.Models.ChangeTaskStageRequestDTO.DTO;
+namespace Kanboom.Models.ChangeTaskStage.DTO;
 
 public class ChangeTaskStageRequestDTO 
 {
