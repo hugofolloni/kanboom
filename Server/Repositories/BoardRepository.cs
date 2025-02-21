@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Kanboom.Models.Database;
 using Kanboom.Models.CreateBoard.DTO;
 using System.Security.Cryptography;
+using Kanboom.Models.ChangeBoardStages.DTO;
 
 namespace Kanboom.Repositories;
 public class BoardRepository : IBoardRepository {
@@ -260,6 +261,47 @@ public class BoardRepository : IBoardRepository {
         .Where(b => b.Id == boardId)
         .Select(b => b.Fk_BoardOwner)
         .FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> UpdateStageNumber(long boardId, int currentStage, int newStage)
+    {
+        try
+        {
+            var stage = await _context.StageLevels
+            .Where(sl => sl.Fk_Board == boardId && sl.StageNumber == currentStage)
+            .FirstOrDefaultAsync();
+
+            stage.StageNumber = newStage;
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<bool> AddStageToBoard(ChangeBoardStagesRequestDTO request)
+    {
+        try
+        {
+            var stage = new StageLevels
+            {
+                StageName = request.StageName,
+                StageNumber = request.StageNumber,
+                Fk_Board = request.BoardId
+            };
+
+            _context.StageLevels.Add(stage);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
 
 

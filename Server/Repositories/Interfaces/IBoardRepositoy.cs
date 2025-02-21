@@ -1,3 +1,4 @@
+using Kanboom.Models.ChangeBoardStages.DTO;
 using Kanboom.Models.CreateBoard.DTO;
 using Kanboom.Models.Database;
 
@@ -18,4 +19,6 @@ public interface IBoardRepository
     Task<Board> ChangeOwner(long newOwnerId, long boardId);
     Task<bool> DeleteBoard(long? boardId);
     Task<long> GetBoardOwner(long? boardId);
+    Task<bool> UpdateStageNumber(long boardId, int currentStage, int newStage);
+    Task<bool> AddStageToBoard(ChangeBoardStagesRequestDTO request);
 }

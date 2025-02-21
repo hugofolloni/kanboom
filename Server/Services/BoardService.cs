@@ -6,6 +6,8 @@ using Kanboom.Models.CreateBoard.DTO;
 using Kanboom.Models.RetrieveBoard.DTO;
 using Kanboom.Models.LeaveBoard.DTO;
 using Kanboom.Models.ChangeBoardOwner.DTO;
+using Kanboom.Models.ChangeBoardStages.DTO;
+using Kanboom.Models.ChangeTaskStage.DTO;
 
 namespace Kanboom.Services;
  
@@ -220,4 +222,53 @@ public class BoardService : IBoardService
             return response;
         }
     }
+
+    public async Task<ChangeBoardStagesResponseDTO> AddStageToBoard(ChangeBoardStagesRequestDTO request){
+        var response = new ChangeBoardStagesResponseDTO();
+        try { 
+            var editorId = await _userService.GetUserIdByToken(request.Token);
+            var boardBasicData = await _repository.RetrieveBoard(request.BoardId);
+            var board = new Domain.Board{Id = boardBasicData.Id, Name = boardBasicData.Name, StagesCount = boardBasicData.StagesCount, Fk_BoardOwner = boardBasicData.Fk_BoardOwner, IsGroupBoard = boardBasicData.IsGroupBoard, Tasks = await _taskService.GetTasksInBoard(boardBasicData.Id), Users = await _userService.GetBoardUsers(boardBasicData.Id), StageLevels = await RetrieveLabelsForBoardLevels(boardBasicData.Id), Invite = boardBasicData.Invite};
+
+             if(!board.Fk_BoardOwner.Equals(editorId)){
+                response.IsSuccessful = false;
+                response.Message = "USER_CANT_CHANGE_BOARD_STAGES";
+                return response;
+            }
+
+            var currentStages = board.StageLevels.Where(s => s.StageNumber >= request.StageNumber).OrderBy(s => s.StageNumber).ToList();
+
+            foreach(Domain.StageLevel stage in currentStages){
+                await _repository.UpdateStageNumber(board.Id, stage.StageNumber, stage.StageNumber + 1);
+                var taskInStage = board.Tasks.Where(t => t.StageNumber == stage.StageNumber).ToList();
+                foreach(Domain.Task task in taskInStage){
+                    var taskDTO = new ChangeTaskStageRequestDTO{
+                        Id = task.Id,
+                        Stage = stage.StageNumber + 1,
+                        Token = request.Token,
+                        Fk_Board = request.BoardId
+                    };
+                    await _taskService.ChangeStage(taskDTO);
+                }
+            }
+
+            var data = await _repository.AddStageToBoard(request);
+
+            if (!data){
+                response.IsSuccessful = false;
+                response.Message = "COULDNT_ADD_STAGE_TO_BOARD";
+                return response;
+            }
+
+            response.Board = new Domain.Board{Id = board.Id, Name = board.Name, StagesCount = board.StagesCount + 1, Fk_BoardOwner = board.Fk_BoardOwner, IsGroupBoard = board.IsGroupBoard, Tasks = await _taskService.GetTasksInBoard(board.Id), Users = await _userService.GetBoardUsers(board.Id), StageLevels = await RetrieveLabelsForBoardLevels(board.Id), Invite = board.Invite};
+            response.IsSuccessful = true;
+            return response;
+        }
+        catch(Exception ex){
+            response.IsSuccessful = false;
+            response.Message = ex.Message;
+            return response;
+        }
+    }
+
 }

@@ -7,6 +7,8 @@ using Kanboom.Models.RetrieveBoard;
 using Kanboom.Utils;
 using Kanboom.Models.ChangeBoardOwner;
 using Kanboom.Models.ChangeBoardOwner.DTO;
+using Kanboom.Models.ChangeBoardStages;
+using Kanboom.Models.ChangeBoardStages.DTO;
 
 namespace Kanboom.Controllers;
 
@@ -88,6 +90,33 @@ public class BoardController : ControllerBase
         }
         catch(Exception e){
             return StatusCode(500, ChangeBoardOwnerResponse.FromError(e.Message));
+        }
+    }
+
+    
+    [Verification]
+    [HttpPost("board/addStage")]
+    public async Task<ActionResult<ChangeBoardStagesResponse>> ChangeStages([FromBody] ChangeBoardStagesRequest request){
+        try {
+            var boardStage = new ChangeBoardStagesRequestDTO{
+                BoardId = request.BoardId,
+                Token = request.Token,
+                StageNumber = request.StageNumber,
+                StageName = request.StageName
+            };
+
+            var response = await _boardService.AddStageToBoard(boardStage);
+
+            if(!response.IsSuccessful){
+                return BadRequest(ChangeBoardStagesResponse.FromFailure(response.Message));
+            }
+
+            return Ok(ChangeBoardStagesResponse.FromSuccess(response.Board));
+
+                
+        }
+        catch(Exception e){
+            return StatusCode(500, ChangeBoardStagesResponse.FromError(e.Message));
         }
     }
 }

@@ -54,7 +54,6 @@ public class UserService : IUserService {
 
     public async Task<long> GetUserIdByToken(string token){
         var username = _authService.ValidateToken(new PersistUserRequestDTO{Token = token}).Username;
-        Console.Write("username = ", username);
         return await GetUserIdByUsername(username);
     }
 

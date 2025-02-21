@@ -197,7 +197,7 @@ public class TaskService : ITaskService {
                 return response;
             }
 
-            if(task.Fk_UserAssigned != null && (await _userService.GetBoardOwner(request.Fk_Board) != editorId || task.Fk_UserAssigned == editorId)){
+            if(task.Fk_UserAssigned != null && !(await _userService.GetBoardOwner(request.Fk_Board) == editorId || task.Fk_UserAssigned == editorId)){
                 response.IsSuccessful = false;
                 response.Message = "USER_CANT_CHANGE_ASSIGNED";
                 return response;    
