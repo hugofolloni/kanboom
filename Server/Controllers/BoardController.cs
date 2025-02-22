@@ -119,4 +119,59 @@ public class BoardController : ControllerBase
             return StatusCode(500, ChangeBoardStagesResponse.FromError(e.Message));
         }
     }
+
+
+    [Verification]
+    [HttpDelete("board/deleteStage")]
+    public async Task<ActionResult<ChangeBoardStagesResponse>> DeleteStage([FromBody] ChangeBoardStagesRequest request){
+        try {
+            var boardStage = new ChangeBoardStagesRequestDTO{
+                BoardId = request.BoardId,
+                Token = request.Token,
+                StageNumber = request.StageNumber,
+                StageName = request.StageName
+            };
+
+            var response = await _boardService.RemoveStageFromBoard(boardStage);
+
+            if(!response.IsSuccessful){
+                return BadRequest(ChangeBoardStagesResponse.FromFailure(response.Message));
+            }
+
+            return Ok(ChangeBoardStagesResponse.FromSuccess(response.Board));
+
+                
+        }
+        catch(Exception e){
+            return StatusCode(500, ChangeBoardStagesResponse.FromError(e.Message));
+        }
+    }
+
+
+    [Verification]
+    [HttpPost("board/renameStage")]
+    public async Task<ActionResult<ChangeBoardStagesResponse>> RenameStage([FromBody] ChangeBoardStagesRequest request){
+        try {
+            var boardStage = new ChangeBoardStagesRequestDTO{
+                BoardId = request.BoardId,
+                Token = request.Token,
+                StageNumber = request.StageNumber,
+                StageName = request.StageName
+            };
+
+            var response = await _boardService.RenameStage(boardStage);
+
+            if(!response.IsSuccessful){
+                return BadRequest(ChangeBoardStagesResponse.FromFailure(response.Message));
+            }
+
+            return Ok(ChangeBoardStagesResponse.FromSuccess(response.Board));
+
+                
+        }
+        catch(Exception e){
+            return StatusCode(500, ChangeBoardStagesResponse.FromError(e.Message));
+        }
+    }
+
 }

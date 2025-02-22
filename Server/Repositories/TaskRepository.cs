@@ -27,7 +27,8 @@ public class TaskRepository : ITaskRepository {
                 Description = task.Description, // Adjust based on your Task entity
                 StageNumber = task.StageNumber,
                 Fk_UserAssigned = task.Fk_UserAssigned,
-                Fk_Board = task.Fk_Board
+                Fk_Board = task.Fk_Board,
+                Hidden = task.Hidden
             })
         .ToListAsync();
     }
@@ -110,8 +111,6 @@ public class TaskRepository : ITaskRepository {
             if(task.Fk_Board != request.Fk_Board){
                 throw new Exception("TASK_NOT_IN_BOARD");
             }
-
-            Console.WriteLine(task.Hidden.ToString(), request.Hidden.ToString(), task.Title);
 
             task.Hidden = request.Hidden;
 

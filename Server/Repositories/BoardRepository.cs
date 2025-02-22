@@ -322,4 +322,42 @@ public class BoardRepository : IBoardRepository {
 
         return new string(result);
     }
+
+    public async Task<bool> RemoveStageFromBoard(ChangeBoardStagesRequestDTO request)
+    {
+        try
+        {
+            var stage = await _context.StageLevels
+            .Where(sl => sl.Fk_Board == request.BoardId && sl.StageNumber == request.StageNumber)
+            .FirstOrDefaultAsync();
+
+            _context.StageLevels.Remove(stage);
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<bool> RenameStage(ChangeBoardStagesRequestDTO request)
+    {
+        try
+        {
+            var stage = await _context.StageLevels
+            .Where(sl => sl.Fk_Board == request.BoardId && sl.StageNumber == request.StageNumber)
+            .FirstOrDefaultAsync();
+
+            stage.StageName = request.StageName;
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 }

@@ -21,4 +21,6 @@ public interface IBoardRepository
     Task<long> GetBoardOwner(long? boardId);
     Task<bool> UpdateStageNumber(long boardId, int currentStage, int newStage);
     Task<bool> AddStageToBoard(ChangeBoardStagesRequestDTO request);
+    Task<bool> RemoveStageFromBoard(ChangeBoardStagesRequestDTO request);
+    Task<bool> RenameStage(ChangeBoardStagesRequestDTO request);
 }

@@ -15,4 +15,6 @@ public interface IBoardService {
     Task<LeaveBoardResponseDTO> LeaveBoard(LeaveBoardRequestDTO request);
     Task<ChangeBoardOwnerResponseDTO> ChangeOwner(ChangeBoardOwnerRequestDTO request);
     Task<ChangeBoardStagesResponseDTO> AddStageToBoard(ChangeBoardStagesRequestDTO request);
+    Task<ChangeBoardStagesResponseDTO> RemoveStageFromBoard(ChangeBoardStagesRequestDTO request);
+    Task<ChangeBoardStagesResponseDTO> RenameStage(ChangeBoardStagesRequestDTO request);
 }
