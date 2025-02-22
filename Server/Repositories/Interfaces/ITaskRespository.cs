@@ -13,6 +13,6 @@ public interface ITaskRepository
     Task<Models.Database.Task> ChangeVisibility(ChangeTaskVisibilityRequestDTO request);
     Task<Models.Database.Task> ChangeStage(ChangeTaskStageRequestDTO request);
     Task<List<Models.Database.Task>> GetTasksByUser(long userId);
-    Task<Models.Database.Task> ChangeTaskAssignedUser(long taskId, long userId);
+    Task<Models.Database.Task> ChangeTaskAssigneeUser(long taskId, long userId);
     Task<Models.Database.Task> RetrieveTask(long taskId);
 }

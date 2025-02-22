@@ -26,7 +26,7 @@ public class TaskRepository : ITaskRepository {
                 Title = task.Title,
                 Description = task.Description, // Adjust based on your Task entity
                 StageNumber = task.StageNumber,
-                Fk_UserAssigned = task.Fk_UserAssigned,
+                Fk_UserAssignee = task.Fk_UserAssignee,
                 Fk_Board = task.Fk_Board,
                 Hidden = task.Hidden
             })
@@ -42,7 +42,7 @@ public class TaskRepository : ITaskRepository {
                 Title = request.Title,
                 Description = request.Description,
                 Fk_Board = request.Fk_Board,
-                Fk_UserAssigned = request.Fk_UserAssigned,
+                Fk_UserAssignee = request.Fk_UserAssignee,
                 StageNumber = 0,
                 Hidden = false
             };
@@ -84,8 +84,8 @@ public class TaskRepository : ITaskRepository {
                 task.Description = request.Description;
             }
 
-            if(request.Fk_UserAssigned != null){
-                task.Fk_UserAssigned = request.Fk_UserAssigned;
+            if(request.Fk_UserAssignee != null){
+                task.Fk_UserAssignee = request.Fk_UserAssignee;
             }
 
             _context.Task.Update(task);
@@ -160,10 +160,10 @@ public class TaskRepository : ITaskRepository {
     }
 
     public async Task<List<Models.Database.Task>> GetTasksByUser(long userId){
-        return await _context.Task.Where(t => t.Fk_UserAssigned == userId).ToListAsync();
+        return await _context.Task.Where(t => t.Fk_UserAssignee == userId).ToListAsync();
     }
 
-    public async Task<Models.Database.Task> ChangeTaskAssignedUser(long taskId, long userId)
+    public async Task<Models.Database.Task> ChangeTaskAssigneeUser(long taskId, long userId)
     {
         try
         {
@@ -173,7 +173,7 @@ public class TaskRepository : ITaskRepository {
                 throw new Exception("TASK_NOT_FOUND");
             }
 
-            task.Fk_UserAssigned = userId;
+            task.Fk_UserAssignee = userId;
 
             _context.Task.Update(task);
             await _context.SaveChangesAsync();

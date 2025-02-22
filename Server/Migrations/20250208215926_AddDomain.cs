@@ -125,7 +125,7 @@ namespace Server.Migrations
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Fk_Board = table.Column<long>(type: "bigint", nullable: false),
                     StageNumber = table.Column<int>(type: "integer", nullable: false),
-                    Fk_UserAssigned = table.Column<long>(type: "bigint", nullable: false)
+                    Fk_UserAssignee = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -137,8 +137,8 @@ namespace Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Task_User_Fk_UserAssigned",
-                        column: x => x.Fk_UserAssigned,
+                        name: "FK_Task_User_Fk_UserAssignee",
+                        column: x => x.Fk_UserAssignee,
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -165,9 +165,9 @@ namespace Server.Migrations
                 column: "Fk_Board");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Task_Fk_UserAssigned",
+                name: "IX_Task_Fk_UserAssignee",
                 table: "Task",
-                column: "Fk_UserAssigned");
+                column: "Fk_UserAssignee");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserGroup_Fk_UserId",

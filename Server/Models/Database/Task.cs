@@ -7,6 +7,6 @@ public class Task
     public required string Description { get; set; }
     public long? Fk_Board { get; set; }
     public required int StageNumber { get; set; }
-    public  long?  Fk_UserAssigned  { get; set; }
+    public  long?  Fk_UserAssignee  { get; set; }
     public bool Hidden { get; set; }
 }

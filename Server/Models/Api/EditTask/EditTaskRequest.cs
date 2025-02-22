@@ -16,6 +16,6 @@ public class EditTaskRequest : BaseRequest
 
     public string? Description { get; set; }
 
-    public long? Fk_UserAssigned { get; set; }
+    public long? Fk_UserAssignee { get; set; }
 
 }

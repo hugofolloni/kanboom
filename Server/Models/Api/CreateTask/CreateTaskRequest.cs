@@ -14,5 +14,5 @@ public class CreateTaskRequest : BaseRequest
 
     [Required(ErrorMessage = "Fk_Board is missing")]
     public required long Fk_Board { get; set; }
-    public long? Fk_UserAssigned { get; set; }
+    public long? Fk_UserAssignee { get; set; }
 }

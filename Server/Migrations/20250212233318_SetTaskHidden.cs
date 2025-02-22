@@ -15,11 +15,11 @@ namespace Server.Migrations
                 table: "Task");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Task_User_Fk_UserAssigned",
+                name: "FK_Task_User_Fk_UserAssignee",
                 table: "Task");
 
             migrationBuilder.AlterColumn<long>(
-                name: "Fk_UserAssigned",
+                name: "Fk_UserAssignee",
                 table: "Task",
                 type: "bigint",
                 nullable: true,
@@ -49,9 +49,9 @@ namespace Server.Migrations
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Task_User_Fk_UserAssigned",
+                name: "FK_Task_User_Fk_UserAssignee",
                 table: "Task",
-                column: "Fk_UserAssigned",
+                column: "Fk_UserAssignee",
                 principalTable: "User",
                 principalColumn: "Id");
         }
@@ -64,7 +64,7 @@ namespace Server.Migrations
                 table: "Task");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Task_User_Fk_UserAssigned",
+                name: "FK_Task_User_Fk_UserAssignee",
                 table: "Task");
 
             migrationBuilder.DropColumn(
@@ -72,7 +72,7 @@ namespace Server.Migrations
                 table: "Task");
 
             migrationBuilder.AlterColumn<long>(
-                name: "Fk_UserAssigned",
+                name: "Fk_UserAssignee",
                 table: "Task",
                 type: "bigint",
                 nullable: false,
@@ -100,9 +100,9 @@ namespace Server.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Task_User_Fk_UserAssigned",
+                name: "FK_Task_User_Fk_UserAssignee",
                 table: "Task",
-                column: "Fk_UserAssigned",
+                column: "Fk_UserAssignee",
                 principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);

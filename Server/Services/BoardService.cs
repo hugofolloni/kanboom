@@ -166,8 +166,8 @@ public class BoardService : IBoardService
                 await _repository.ChangeOwner(secondUser.Id, request.BoardId);
             }
 
-            var tasksAssigned = await _repository.GetTasksByUserInBoard(userId, boardInfo.Id);
-            foreach(Models.Database.Task task in tasksAssigned){
+            var tasksAssignee = await _repository.GetTasksByUserInBoard(userId, boardInfo.Id);
+            foreach(Models.Database.Task task in tasksAssignee){
                 await _taskService.HandleTaskOwnerLeavingGroup(task.Id, boardInfo.Fk_BoardOwner);
             }
 
@@ -207,7 +207,7 @@ public class BoardService : IBoardService
 
             if(!boardUsers.Contains(request.BoardOwner)){
                 response.IsSuccessful = false;
-                response.Message = "USER_CANT_BE_ASSIGNED_AS_OWNER";
+                response.Message = "USER_CANT_BE_ASSIGNEE_AS_OWNER";
                 return response;    
             }
 

@@ -146,7 +146,7 @@ namespace Server.Migrations
                     b.Property<long>("Fk_Board")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("Fk_UserAssigned")
+                    b.Property<long>("Fk_UserAssignee")
                         .HasColumnType("bigint");
 
                     b.Property<int>("StageNumber")
@@ -161,7 +161,7 @@ namespace Server.Migrations
 
                     b.HasIndex("Fk_Board");
 
-                    b.HasIndex("Fk_UserAssigned");
+                    b.HasIndex("Fk_UserAssignee");
 
                     b.ToTable("Task");
                 });
@@ -256,7 +256,7 @@ namespace Server.Migrations
 
                     b.HasOne("Kanboom.Models.Database.User", null)
                         .WithMany("Task")
-                        .HasForeignKey("Fk_UserAssigned")
+                        .HasForeignKey("Fk_UserAssignee")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

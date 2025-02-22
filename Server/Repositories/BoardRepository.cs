@@ -152,7 +152,7 @@ public class BoardRepository : IBoardRepository {
     public async Task<List<Models.Database.Task>> GetTasksByUserInBoard(long userId, long boardId)
     {
         return await _context.Task
-        .Where(t => t.Fk_UserAssigned == userId && t.Fk_Board == boardId)
+        .Where(t => t.Fk_UserAssignee == userId && t.Fk_Board == boardId)
         .ToListAsync();
     }
 

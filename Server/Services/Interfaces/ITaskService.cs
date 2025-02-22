@@ -1,5 +1,5 @@
 using Kanboom.Models;
-using Kanboom.Models.ChangeTaskAssigned.DTO;
+using Kanboom.Models.ChangeTaskAssignee.DTO;
 using Kanboom.Models.ChangeTaskStage.DTO;
 using Kanboom.Models.ChangeTaskVisibility.DTO;
 using Kanboom.Models.CreateTask.DTO;
@@ -16,5 +16,5 @@ public interface ITaskService {
     Task<ChangeTaskStageResponseDTO> ChangeStage(ChangeTaskStageRequestDTO request);
     Task<List<Domain.Task>> GetTasksByUser(long userId);
     Task<bool> HandleTaskOwnerLeavingGroup(long taskId, long userId);
-    Task<ChangeTaskAssignedResponseDTO> ChangeAssigned(ChangeTaskAssignedRequestDTO request);
+    Task<ChangeTaskAssigneeResponseDTO> ChangeAssignee(ChangeTaskAssigneeRequestDTO request);
 }

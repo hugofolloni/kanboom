@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-namespace Kanboom.Models.ChangeTaskAssigned;
+namespace Kanboom.Models.ChangeTaskAssignee;
 
-public class ChangeTaskAssignedRequest : BaseRequest
+public class ChangeTaskAssigneeRequest : BaseRequest
 {
     [Required(ErrorMessage = "Token is missing")]
     public required string Token { get; set; }
@@ -12,6 +12,6 @@ public class ChangeTaskAssignedRequest : BaseRequest
     [Required(ErrorMessage = "Fk_Board is missing")]
     public required long Fk_Board { get; set; }
 
-    [Required(ErrorMessage = "Assigned is missing")]
-    public required long Assigned { get; set; }
+    [Required(ErrorMessage = "Assignee is missing")]
+    public required long Assignee { get; set; }
 }

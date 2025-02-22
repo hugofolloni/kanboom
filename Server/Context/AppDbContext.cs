@@ -21,7 +21,7 @@ public class AppDbContext : DbContext {
         mb.Entity<User>().HasIndex(u => u.Username).IsUnique();
         mb.Entity<User>().Property(x => x.Password).HasMaxLength(200);
         mb.Entity<User>().Property(x => x.Email).HasMaxLength(100);
-        mb.Entity<User>().HasMany(x => x.Task).WithOne().HasForeignKey(x => x.Fk_UserAssigned);
+        mb.Entity<User>().HasMany(x => x.Task).WithOne().HasForeignKey(x => x.Fk_UserAssignee);
         mb.Entity<User>().HasMany(x => x.UserGroup).WithOne().HasForeignKey(x => x.Fk_UserId);
         mb.Entity<User>().HasMany(x => x.BoardUser).WithOne().HasForeignKey(x => x.Fk_UserId);
 

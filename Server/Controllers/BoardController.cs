@@ -149,7 +149,7 @@ public class BoardController : ControllerBase
 
 
     [Verification]
-    [HttpPost("board/renameStage")]
+    [HttpPatch("board/renameStage")]
     public async Task<ActionResult<ChangeBoardStagesResponse>> RenameStage([FromBody] ChangeBoardStagesRequest request){
         try {
             var boardStage = new ChangeBoardStagesRequestDTO{
@@ -173,5 +173,4 @@ public class BoardController : ControllerBase
             return StatusCode(500, ChangeBoardStagesResponse.FromError(e.Message));
         }
     }
-
 }

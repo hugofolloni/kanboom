@@ -6,7 +6,7 @@ using Kanboom.Models.CreateTask.DTO;
 using Kanboom.Models.EditTask.DTO;
 using Kanboom.Models.ChangeTaskVisibility.DTO;
 using Kanboom.Models.ChangeTaskStage.DTO;
-using Kanboom.Models.ChangeTaskAssigned.DTO;
+using Kanboom.Models.ChangeTaskAssignee.DTO;
 
 namespace Kanboom.Services;
  
@@ -42,7 +42,7 @@ public class TaskService : ITaskService {
         
         foreach (Models.Database.Task task in boardTasks)
         {
-            var boardTask = new Domain.Task{Id = task.Id, Title = task.Title, Description = task.Description, StageNumber = task.StageNumber, Fk_UserAssigned = task.Fk_UserAssigned, Fk_Board = task.Fk_Board, Hidden = task.Hidden};
+            var boardTask = new Domain.Task{Id = task.Id, Title = task.Title, Description = task.Description, StageNumber = task.StageNumber, Fk_UserAssignee = task.Fk_UserAssignee, Fk_Board = task.Fk_Board, Hidden = task.Hidden};
             response.Add(boardTask);
         }
 
@@ -56,9 +56,9 @@ public class TaskService : ITaskService {
             var boardUsers = await _userService.GetBoardUsers(request.Fk_Board);
             var creatorId = await _userService.GetUserIdByToken(request.Token);
 
-            if(!boardUsers.Contains(creatorId) || (!boardUsers.Contains(request.Fk_UserAssigned) && request.Fk_UserAssigned != null)){
+            if(!boardUsers.Contains(creatorId) || (!boardUsers.Contains(request.Fk_UserAssignee) && request.Fk_UserAssignee != null)){
                 response.IsSuccessful = false;
-                response.Message = "USER_CANT_CREATE_OR_BE_ASSIGNED_TO_TASK";
+                response.Message = "USER_CANT_CREATE_OR_BE_ASSIGNEE_TO_TASK";
                 return response;    
             }
 
@@ -176,34 +176,34 @@ public class TaskService : ITaskService {
 
     public async Task<bool> HandleTaskOwnerLeavingGroup(long taskId, long boardOwner)
     {
-        var data = await _repository.ChangeTaskAssignedUser(taskId, boardOwner);
-        if(data.Fk_UserAssigned != boardOwner){
+        var data = await _repository.ChangeTaskAssigneeUser(taskId, boardOwner);
+        if(data.Fk_UserAssignee != boardOwner){
             return false;
         }
         return true;
     }
 
-    public async Task<ChangeTaskAssignedResponseDTO> ChangeAssigned(ChangeTaskAssignedRequestDTO request)
+    public async Task<ChangeTaskAssigneeResponseDTO> ChangeAssignee(ChangeTaskAssigneeRequestDTO request)
     {
-        var response = new ChangeTaskAssignedResponseDTO();
+        var response = new ChangeTaskAssigneeResponseDTO();
         try{
             var boardUsers = await _userService.GetBoardUsers(request.Fk_Board);
             var editorId = await _userService.GetUserIdByToken(request.Token);
             var task = await _repository.RetrieveTask(request.Id);
 
-            if(!boardUsers.Contains(request.Assigned)){
+            if(!boardUsers.Contains(request.Assignee)){
                 response.IsSuccessful = false;
-                response.Message = "USER_CANT_BE_ASSIGNED";
+                response.Message = "USER_CANT_BE_ASSIGNEE";
                 return response;
             }
 
-            if(task.Fk_UserAssigned != null && !(await _userService.GetBoardOwner(request.Fk_Board) == editorId || task.Fk_UserAssigned == editorId)){
+            if(task.Fk_UserAssignee != null && !(await _userService.GetBoardOwner(request.Fk_Board) == editorId || task.Fk_UserAssignee == editorId)){
                 response.IsSuccessful = false;
-                response.Message = "USER_CANT_CHANGE_ASSIGNED";
+                response.Message = "USER_CANT_CHANGE_ASSIGNEE";
                 return response;    
             }
 
-            var data = await _repository.ChangeTaskAssignedUser(request.Id, request.Assigned);
+            var data = await _repository.ChangeTaskAssigneeUser(request.Id, request.Assignee);
 
             response.Task = TransformDataInDomain(data);
             response.IsSuccessful = true;
@@ -226,7 +226,7 @@ public class TaskService : ITaskService {
         task.Title = data.Title;
         task.Description = data.Description;
         task.Fk_Board = data.Fk_Board;
-        task.Fk_UserAssigned = data.Fk_UserAssigned;
+        task.Fk_UserAssignee = data.Fk_UserAssignee;
         task.StageNumber = data.StageNumber;
         task.Hidden = data.Hidden;
 

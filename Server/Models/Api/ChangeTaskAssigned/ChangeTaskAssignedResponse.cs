@@ -1,10 +1,10 @@
-namespace Kanboom.Models.ChangeTaskAssigned;
+namespace Kanboom.Models.ChangeTaskAssignee;
 
-public class ChangeTaskAssignedResponse : BaseResponse
+public class ChangeTaskAssigneeResponse : BaseResponse
 {
     public Domain.Task? Task { get; set; }
-    public static ChangeTaskAssignedResponse FromSuccess(Domain.Task task) {
-        return new ChangeTaskAssignedResponse {
+    public static ChangeTaskAssigneeResponse FromSuccess(Domain.Task task) {
+        return new ChangeTaskAssigneeResponse {
             Task = task,
             Success = true,
             Message = "CHANGE_TASK_STAGE",
@@ -13,8 +13,8 @@ public class ChangeTaskAssignedResponse : BaseResponse
         };
     }
     
-    public static ChangeTaskAssignedResponse FromFailure(string Message, List<string>? errors = null) {
-        return new ChangeTaskAssignedResponse {
+    public static ChangeTaskAssigneeResponse FromFailure(string Message, List<string>? errors = null) {
+        return new ChangeTaskAssigneeResponse {
             Task = null,
             Success = false,
             Message = Message,
@@ -23,8 +23,8 @@ public class ChangeTaskAssignedResponse : BaseResponse
         };
     } 
 
-    public static ChangeTaskAssignedResponse FromError(string ExceptionMessage, List<string>? errors = null) {
-        return new ChangeTaskAssignedResponse {
+    public static ChangeTaskAssigneeResponse FromError(string ExceptionMessage, List<string>? errors = null) {
+        return new ChangeTaskAssigneeResponse {
             Task = null,
             Success = false,
             Message = "ERROR",

@@ -9,8 +9,8 @@ using Kanboom.Models.ChangeTaskVisibility;
 using Kanboom.Models.ChangeTaskVisibility.DTO;
 using Kanboom.Models.ChangeTaskStage;
 using Kanboom.Models.ChangeTaskStage.DTO;
-using Kanboom.Models.ChangeTaskAssigned;
-using Kanboom.Models.ChangeTaskAssigned.DTO;
+using Kanboom.Models.ChangeTaskAssignee;
+using Kanboom.Models.ChangeTaskAssignee.DTO;
 
 namespace Kanboom.Controllers;
 
@@ -29,7 +29,7 @@ public class TaskController : ControllerBase
             var task = new CreateTaskRequestDTO{
                 Title = request.Title,
                 Description = request.Description,
-                Fk_UserAssigned = request.Fk_UserAssigned,
+                Fk_UserAssignee = request.Fk_UserAssignee,
                 Token = request.Token,
                 Fk_Board = request.Fk_Board
             };
@@ -57,7 +57,7 @@ public class TaskController : ControllerBase
             var task = new EditTaskRequestDTO{
                 Title = request.Title,
                 Description = request.Description,
-                Fk_UserAssigned = request.Fk_UserAssigned,
+                Fk_UserAssignee = request.Fk_UserAssignee,
                 Id = request.Id,
                 Token = request.Token,
                 Fk_Board = request.Fk_Board
@@ -134,28 +134,28 @@ public class TaskController : ControllerBase
     }
 
     [Verification]
-    [HttpPatch("task/changeAssigned")]
-    public async Task<ActionResult<ChangeTaskAssignedResponse>> ChangeAssigned([FromBody] ChangeTaskAssignedRequest request){
+    [HttpPatch("task/changeAssignee")]
+    public async Task<ActionResult<ChangeTaskAssigneeResponse>> ChangeAssignee([FromBody] ChangeTaskAssigneeRequest request){
         try {
 
-            var task = new ChangeTaskAssignedRequestDTO{
+            var task = new ChangeTaskAssigneeRequestDTO{
                 Id = request.Id,
                 Token = request.Token,
                 Fk_Board = request.Fk_Board,
-                Assigned = request.Assigned
+                Assignee = request.Assignee
             };
 
-            var response = await _taskService.ChangeAssigned(task);
+            var response = await _taskService.ChangeAssignee(task);
 
             if(!response.IsSuccessful){
-                return BadRequest(ChangeTaskAssignedResponse.FromFailure(response.Message));
+                return BadRequest(ChangeTaskAssigneeResponse.FromFailure(response.Message));
             }
 
-            return Ok(ChangeTaskAssignedResponse.FromSuccess(response.Task));
+            return Ok(ChangeTaskAssigneeResponse.FromSuccess(response.Task));
 
         }
         catch(Exception e){
-            return StatusCode(500, ChangeTaskAssignedResponse.FromError(e.Message));
+            return StatusCode(500, ChangeTaskAssigneeResponse.FromError(e.Message));
         }
     }
 }

@@ -1,6 +1,6 @@
-namespace Kanboom.Models.ChangeTaskAssigned.DTO;
+namespace Kanboom.Models.ChangeTaskAssignee.DTO;
 
-public class ChangeTaskAssignedResponseDTO
+public class ChangeTaskAssigneeResponseDTO
 {
     public Domain.Task? Task { get; set; }
     public bool IsSuccessful { get; set; }
