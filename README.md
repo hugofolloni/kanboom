@@ -37,7 +37,7 @@ Kanboom aims to provide a straightforward and effective Kanban experience. It em
 
 * Node.js v18 or later
 * .NET 8 SDK
-* [**Add your database system here, e.g., PostgreSQL**]
+* PostgreSQL
 * Git
 * Docker (optional, for local development)
 
@@ -88,64 +88,249 @@ Kanboom aims to provide a straightforward and effective Kanban experience. It em
 ### Authentication
 
 * **POST /auth/login**
-    * Description: Authenticates a user and returns a JWT token.
+    * Description: Authenticates a user and returns a JWT token
     * Request Body:
         ```json
-        { "username": "string", "password": "string" }
+        {
+            "apiKey": "string",
+            "username": "string",
+            "passwordHash": "string"
+        }
         ```
-    * Response Body:
-        ```json
-        { "token": "string" }
-        ```
-    * Status Codes:
-        * 200 OK: Authentication successful
-        * 400 Bad Request: Invalid username or password
-        * 500 Internal Server Error: Server error during authentication
-    * Authentication: None
+    * Response: Returns the token
+    <br>
 * **POST /auth/persist**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Validates and refreshes an existing authentication token
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string"
+        }
+        ```
+    * Response: Returns the username
 
 ### Boards
 
 * **POST /board**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Retrieves detailed information about a specific board
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "boardId": 0
+        }
+        ```
+    * Response: Returns complete board details including stages, tasks, and users
+    <br>
 * **POST /board/create**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Creates a new board
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "name": "string"
+        }
+        ```
+    * Response: Returns the newly created board details
+    <br>
 * **PATCH /board/changeOwner**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Transfers board ownership to another user
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "boardId": 0,
+            "owner": 0
+        }
+        ```
+    * Response: Returns updated board details
+    <br>
 * **POST /board/addStage**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Adds a new stage/column to the board
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "boardId": 0,
+            "stageNumber": 0,
+            "stageName": "string"
+        }
+        ```
+    * Response: Returns updated board details
+    <br>
 * **DELETE /board/deleteStage**
-    * [**Add detailed documentation for this endpoint.**]
-* **POST /board/renameStage**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Removes a stage/column from the board
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "boardId": 0,
+            "stageNumber": 0,
+            "stageName": "string"
+        }
+        ```
+    * Response: Returns updated board details
+    <br>
+* **PATCH /board/renameStage**
+    * Description: Renames an existing stage/column
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "boardId": 0,
+            "stageNumber": 0,
+            "stageName": "string"
+        }
+        ```
+    * Response: Returns updated board details
 
 ### Board Users
 
 * **POST /boardUser/invite**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Accepts a board invitation using an invite code
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "invite": "string"
+        }
+        ```
+    * Response: Returns board details after joining
+    <br>
 * **DELETE /boardUser/leave**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Removes the current user from a board
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "boardId": 0
+        }
+        ```
+    * Response: Returns success confirmation
 
 ### Tasks
 
 * **POST /task/create**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Creates a new task on a board
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "title": "string",
+            "description": "string",
+            "fk_Board": 0,
+            "fk_UserAssignee": 0
+        }
+        ```
+    * Response: Returns the created task details
+    <br>
 * **PATCH /task/edit**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Modifies an existing task's details
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "id": 0,
+            "fk_Board": 0,
+            "title": "string",
+            "description": "string",
+            "fk_UserAssignee": 0
+        }
+        ```
+    * Response: Returns updated task details
+    <br>
 * **PATCH /task/changeVisibility**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Toggles task visibility
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "id": 0,
+            "fk_Board": 0,
+            "hidden": true
+        }
+        ```
+    * Response: Returns updated task details
+    <br>
 * **PATCH /task/changeStage**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Moves a task to a different stage/column
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "id": 0,
+            "fk_Board": 0,
+            "stage": 0
+        }
+        ```
+    * Response: Returns updated task details
+    <br>
 * **PATCH /task/changeAssignee**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Reassigns a task to a different user
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string",
+            "id": 0,
+            "fk_Board": 0,
+            "assignee": 0
+        }
+        ```
+    * Response: Returns updated task details
 
 ### Users
 
 * **POST /user**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Retrieves current user's profile and associated data
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "token": "string"
+        }
+        ```
+    * Response: Returns user profile, boards, and tasks
+    <br>
 * **POST /user/create**
-    * [**Add detailed documentation for this endpoint.**]
+    * Description: Creates a new user account
+    * Request Body:
+        ```json
+        {
+            "apiKey": "string",
+            "username": "string",
+            "passwordHash": "string",
+            "email": "string"
+        }
+        ```
+    * Response: Returns new user details and authentication token
+
+### Response Format
+
+All endpoints return responses in the following format, with additional data specific information to the endpoint:
+
+```json
+{
+    "success": true,
+    "message": "string",
+    "exception": "string",
+    "errors": ["string"],
+}
+```
+<br>
 
 ## Security
 
